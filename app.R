@@ -21,7 +21,9 @@ guess_length <- 50
 ui <- fluidPage(
   tags$head(tags$style(HTML("pre {white-space: pre-wrap; word-break: keep-all;}")),
             tags$style(HTML("td {vertical-align: top;text-align:center;}"))),
-  titlePanel("WordleR: An R-based WORDLE Helper"),
+  img(src='WordleR.png', align = "left"),
+  titlePanel("An R-based WORDLE Helper"),
+  tags$br(),
   tags$h3("1. Start by entering a", 
           tags$a(href="https://www.gamespot.com/articles/wordle-best-first-words-to-use-and-other-tips/1100-6499460/",
                  "good starter word"), 
