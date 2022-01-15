@@ -1,3 +1,4 @@
+![WordkeR](www/WordleR.png)
 # WordleR: An R-based WORDLE Helper
 
 Live app: https://olyerickson.shinyapps.io/wordler/
