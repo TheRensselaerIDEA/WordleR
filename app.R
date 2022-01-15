@@ -76,7 +76,8 @@ ui <- fluidPage(
           tags$a(href="https://www.kaggle.com/rtatman/english-word-frequency","this analysis of English word frequency.")),
   tags$h4("c. According to news reports, Wordle is actually based on a list of approx 2500 five-letter words."),
   tags$h4("d. The list of 'guess' words shown is only a subset of", guess_length, "matching words, in no particular order. We suggest simply chosing the first word!"),
-  tags$h4("e. Powered by R, the world's greatest data analytics language!")
+  tags$h4("e. WordleR is powered by R, the world's greatest data analytics language!"),
+  tags$h4("f. WordleR source code available at:",tags$a(href="TheRensselaerIDEA/WordleR","TheRensselaerIDEA/WordleR"))
 )
 
 server <- function(input, output) {
