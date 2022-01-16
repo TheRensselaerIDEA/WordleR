@@ -25,12 +25,12 @@ ui <- fluidPage(
             ),
   img(src='WordleR.png', align = "left"),
   titlePanel("An R-based WORDLE Helper"),
-  tags$p("NOTE: WordleR may behave strangely on iOS devices. It works perfectly in desktop browsers..."),
+#  tags$p("NOTE: WordleR may behave strangely on iOS devices. It works perfectly in desktop browsers..."),
   tags$h3("1. Start by entering a", 
           tags$a(href="https://www.gamespot.com/articles/wordle-best-first-words-to-use-and-other-tips/1100-6499460/",
                  "good starter word"), 
           "into",
-          tags$a(href="https://www.powerlanguage.co.uk/wordle/","WORDLE"), "like", tags$b("SOARE"),"or",tags$b("ADIEU")),
+          tags$a(href="https://www.powerlanguage.co.uk/wordle/","WORDLE"), "like", tags$b("ABOUT"),"or",tags$b("ADIEU.")),
 #  tags$br(),
   tags$h3("2. Filter the list of possible words based on WORDLE's response:"),
   tags$table(
@@ -65,7 +65,7 @@ ui <- fluidPage(
   ),
   tags$br(),
   tags$h3("3. WordleR's guess: ", tags$b(textOutput("johnsguess",inline = TRUE))),
-  tags$br(),
+#  tags$br(),
   tags$h3("4. Or try one of these words: (",textOutput("possible_guesses",inline = TRUE),"remaining possibilities)"),
   tags$table(width="50%",
              tags$tr(tags$td(verbatimTextOutput("guess"))),
@@ -79,7 +79,8 @@ ui <- fluidPage(
   tags$h4("b. Knuth's list was narrowed to 3000 words based on ",
           tags$a(href="https://www.kaggle.com/rtatman/english-word-frequency","this analysis of English word frequency.")),
   tags$h4("c. According to news reports, Wordle is actually based on a list of approx 2500 five-letter words."),
-  tags$h4("d. The list of 'guess' words shown is only a subset of", guess_length, "matching words, in no particular order. We suggest simply chosing the first word!"),
+  tags$h4("d. Wordler's list of 'possible' guesses is a subset of", guess_length, "matching words, in word frequency order. 
+          WordleR's guess is the top remaining most frequent word."),
   tags$h4("e. WordleR is powered by R, the world's greatest data analytics language!"),
   tags$h4("f. WordleR source code available at:",tags$a(href="TheRensselaerIDEA/WordleR","TheRensselaerIDEA/WordleR"))
 )
