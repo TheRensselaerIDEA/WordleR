@@ -71,16 +71,16 @@ ui <- fluidPage(
                                           style="color: #fff; background-color: #337ab7; border-color: #2e6da4")))
   ),
   tags$br(),
-  tags$h3("Notes:"),
-  tags$h4("a. Based on Knuth's list of 5757 most comment five-letter words:", tags$br(),
+  tags$h4("Notes:"),
+  tags$p("a. Based on Knuth's list of 5757 most comment five-letter words:", tags$br(),
           tags$a(href="https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt","https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt")),
-  tags$h4("b. Knuth's list was narrowed to 3000 words based on ",
+  tags$p("b. Knuth's list was narrowed to 3000 words based on ",
           tags$a(href="https://www.kaggle.com/rtatman/english-word-frequency","this analysis of English word frequency.")),
-  tags$h4("c. According to news reports, Wordle is actually based on a list of approx 2500 five-letter words."),
-  tags$h4("d. Wordler's list of 'possible' guesses is a subset of", guess_length, "matching words, in word frequency order. 
-          WordleR's current guess is the top remaining most-frequent word."),
-  tags$h4("e. WordleR is powered by R, the world's greatest data analytics language!"),
-  tags$h4("f. WordleR source code available at:",tags$a(href="https://github.com/TheRensselaerIDEA/WordleR","https://github.com/TheRensselaerIDEA/WordleR"))
+  tags$p("c. According to news reports, Wordle is actually based on a list of approx 2500 five-letter words."),
+  tags$p("d. Wordler's recommended starter words are the top",tags$i("four-vowel"), "words in Knuth's list"),  
+  tags$p("e. Wordler's list of 'possible' guesses is a subset of", guess_length, "matching words, in word frequency order. WordleR's current guess is the top remaining most-frequent word."),
+  tags$p("f. WordleR is powered by R, the world's greatest data analytics language!"),
+  tags$p("g. WordleR source code available at:",tags$a(href="https://github.com/TheRensselaerIDEA/WordleR","https://github.com/TheRensselaerIDEA/WordleR"))
 )
 
 server <- function(input, output) {
