@@ -11,7 +11,7 @@ b. Knuth's list was narrowed to 3000 words based on this analysis of English wor
 
 c. According to news reports, Wordle is actually based on a list of approx 2500 five-letter words.
 
-d. Wordler's recommended starter words are the top four-vowel words in Knuth's list
+d. Wordler's recommended starter words are the top four-vowel words in Knuth's list: AUDIO, BAYOU, ADIEU, OUIJA and YOUSE.
 
 e. Wordler's list of 'possible' guesses is a subset of 50 matching words, in word frequency order. WordleR's current guess is the top remaining most-frequent word.
 
