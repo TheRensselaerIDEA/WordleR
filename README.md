@@ -3,14 +3,18 @@
 
 Live app: https://olyerickson.shinyapps.io/wordler/
 
-**WordleR** is based on Knuth's list of 5757 most comment five-letter words:
+a. **WordleR** is based on Knuth's list of 5757 most comment five-letter words:
 <br/>&nbsp;&nbsp;&nbsp;https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt
 
-Knuth's list was narrowed to 3000 words based on this analysis of English word frequency:
+b. Knuth's list was narrowed to 3000 words based on this analysis of English word frequency:
 <br/>&nbsp;&nbsp;&nbsp;https://www.kaggle.com/rtatman/english-word-frequency
 
-According to news reports, Wordle is actually based on a list of approx 2500 five-letter words agreed upon by the developer and his partner.
+c. According to news reports, Wordle is actually based on a list of approx 2500 five-letter words.
 
-The list of 'guess' words WordleR displays is only a subset of matching words, in no particular order. _We suggest simply chosing the first word!_
+d. Wordler's recommended starter words are the top four-vowel words in Knuth's list
 
-WordleR is powered by R, the world's greatest data analytics language!
+e. Wordler's list of 'possible' guesses is a subset of 50 matching words, in word frequency order. WordleR's current guess is the top remaining most-frequent word.
+
+f. WordleR is powered by R, the world's greatest data analytics language!
+
+g. WordleR source code available at: https://github.com/TheRensselaerIDEA/WordleR
