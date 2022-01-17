@@ -9,7 +9,7 @@ a. **WordleR** is based on Knuth's list of 5757 most comment five-letter words:
 b. Knuth's list was narrowed to 3000 words based on this analysis of English word frequency:
 <br/>&nbsp;&nbsp;&nbsp;https://www.kaggle.com/rtatman/english-word-frequency
 
-c. According to news reports, Wordle is actually based on a list of approx 2500 five-letter words.
+c. According to news reports, Wordle is actually based on a list of [2315 five-letter words](https://www.reddit.com/r/wordle/comments/s4tcw8/a_note_on_wordles_word_list/).
 
 d. Wordler's recommended starter words are the top four-vowel words in Knuth's list: AUDIO, BAYOU, ADIEU, OUIJA and YOUSE.
 
