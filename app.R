@@ -28,7 +28,7 @@ ui <- fluidPage(
 #  tags$p("NOTE: WordleR may behave strangely on iOS devices. It works perfectly in desktop browsers..."),
   tags$h3("1. Start by entering a vowel-rich starter word into",  
           tags$a(href="https://www.powerlanguage.co.uk/wordle/","WORDLE"), "like:",tags$br(), 
-          tags$b("AUDIO, BAYOU, ADIEU, OUIJA"),"or",tags$b("YOUSE.")),
+          tags$b("ABOUT, AUDIO, BAYOU, ADIEU, OUIJA"),"or",tags$b("YOUSE.")),
 #  tags$br(),
   tags$h3("2. Filter the list of possible words based on WORDLE's response:"),
   tags$table(
@@ -72,7 +72,7 @@ ui <- fluidPage(
   ),
   tags$br(),
   tags$h4("Notes:"),
-  tags$p("a. Based on Knuth's list of 5757 most comment five-letter words:", tags$br(),
+  tags$p("a. Based on Knuth's list of 5757 most common five-letter words:", 
           tags$a(href="https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt","https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt")),
   tags$p("b. Knuth's list was narrowed to 3000 words based on ",
           tags$a(href="https://www.kaggle.com/rtatman/english-word-frequency","this analysis of English word frequency.")),
@@ -80,7 +80,8 @@ ui <- fluidPage(
   tags$p("d. Wordler's recommended starter words are the top",tags$i("four-vowel"), "words in Knuth's list"),  
   tags$p("e. Wordler's list of 'possible' guesses is a subset of", guess_length, "matching words, in word frequency order. WordleR's current guess is the top remaining most-frequent word."),
   tags$p("f. WordleR is powered by R, the world's greatest data analytics language!"),
-  tags$p("g. WordleR source code available at:",tags$a(href="https://github.com/TheRensselaerIDEA/WordleR","https://github.com/TheRensselaerIDEA/WordleR"))
+  tags$p("g. WordleR source code available at:",
+         tags$a(href="https://github.com/TheRensselaerIDEA/WordleR","https://github.com/TheRensselaerIDEA/WordleR"))
 )
 
 server <- function(input, output) {
