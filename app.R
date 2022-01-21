@@ -3,16 +3,13 @@ library(shiny)
 library(tidyverse)
 
 # Initialize our word list
-unigram_freq <- readRDS("unigram_freq.Rds") # From Kaggle
-short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words
-short_list.df <- data.frame(short_list.df)
-colnames(short_list.df) <- c("word")
+# select the top n words by frequency from Knuth's list
+short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words, sorted by frequency
 
 # select the top n words by frequency from Knuth's list
 n <- 3000
-short_list_freq <- left_join(short_list.df,unigram_freq,by="word")
-short_list_freq <- short_list_freq %>% arrange(desc(count))
-short_list <- short_list_freq[1:n,]$word
+
+short_list <- short_list.df[1:n,]$word
 
 # We gratuitously display a subset of words
 guess_length <- 50
@@ -26,9 +23,11 @@ ui <- fluidPage(
   img(src='WordleR.png', align = "left"),
   titlePanel("An R-based WORDLE Helper"),
 #  tags$p("NOTE: WordleR may behave strangely on iOS devices. It works perfectly in desktop browsers..."),
-  tags$h3("1. Start by entering a vowel-rich starter word into",  
-          tags$a(href="https://www.powerlanguage.co.uk/wordle/","WORDLE"), "like:",tags$br(), 
-          tags$b("ABOUT, AUDIO, BAYOU, ADIEU, OUIJA"),"or",tags$b("YOUSE.")),
+  tags$h3("1. Start by entering",
+          tags$b(tags$a(href="https://fivethirtyeight.com/features/can-you-design-the-perfect-wedding/","TRACE")),
+          "or a vowel-rich starter word into",  
+          tags$a(href="https://www.powerlanguage.co.uk/wordle/","WORDLE"), ", like", 
+          tags$b("AUDIO, BAYOU, ADIEU, OUIJA"),"or",tags$b("YOUSE.")),
 #  tags$br(),
   tags$h3("2. Filter the list of possible words based on WORDLE's response:"),
   tags$table(
@@ -76,9 +75,13 @@ ui <- fluidPage(
           tags$a(href="https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt","https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt")),
   tags$p("b. Knuth's list was narrowed to 3000 words based on ",
           tags$a(href="https://www.kaggle.com/rtatman/english-word-frequency","this analysis of English word frequency.")),
-  tags$p("c. According to news reports, Wordle is actually based on a list of approx 2500 five-letter words."),
-  tags$p("d. Wordler's recommended starter words are the top",tags$i("four-vowel"), "words in Knuth's list"),  
-  tags$p("e. Wordler's list of 'possible' guesses is a subset of", guess_length, "matching words, in word frequency order. WordleR's current guess is the top remaining most-frequent word."),
+  tags$p("c. According to news reports, Wordle is actually based on a list of approx 2500 five-letter words. 
+         See the exact list",tags$a(href="https://docs.google.com/spreadsheets/d/1-M0RIVVZqbeh0mZacdAsJyBrLuEmhKUhNaVAI-7pr2Y/edit#gid=0","here.")),
+  tags$p("d. ",tags$b(tags$a(href="https://fivethirtyeight.com/features/can-you-design-the-perfect-wedding/","TRACE")),
+         "is recommended as a starter word based on ",
+         tags$a(href="https://fivethirtyeight.com/features/can-you-design-the-perfect-wedding/","this FiveThirtyEight article."),
+         "WordleR's other recommended starter words are the top",tags$i("four-vowel"), "words in Knuth's list"),  
+  tags$p("e. WordleR's list of 'possible' guesses is a subset of", guess_length, "matching words, in word frequency order. WordleR's current guess is the top remaining most-frequent word."),
   tags$p("f. WordleR is powered by R, the world's greatest data analytics language!"),
   tags$p("g. WordleR source code available at:",
          tags$a(href="https://github.com/TheRensselaerIDEA/WordleR","https://github.com/TheRensselaerIDEA/WordleR"))
