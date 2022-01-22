@@ -1,0 +1,310 @@
+---
+title: "WordleR Performance Analysis (aka 'Autoplayer')"
+author: "John Erickson"
+date: "1/22/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+# library(foreach)
+# library(doParallel)
+# 
+# numCores <- detectCores()
+# numCores
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The Challenge: Are there any Wordle puzzles that WordleR can't find?
+
+There are many possible word lists, from Knuth (5757 words) to Kaggle (over 39k). Ultimately we found the list of 2315 Wordle "Magic Words..."
+
+```{r}
+# The usual setup
+# Initialize our word list
+#unigram_freq <- readRDS("unigram_freq.Rds") # From Kaggle
+#short_list.df <- unigram_freq
+#short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words, sorted by frequency
+short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words
+# short_list.df <- data.frame(short_list.df)
+# colnames(short_list.df) <- c("word")
+
+# select the top n words by frequency from Knuth's list
+n <- nrow(short_list.df)
+# short_list_freq <- left_join(short_list.df,unigram_freq,by="word")
+# short_list_freq <- short_list_freq %>% arrange(desc(count))
+# saveRDS(short_list_freq, "short_list.Rds")
+short_list <- short_list.df[1:n,]$word
+
+```
+
+## The Challenge
+
+**Overview:** For each recommended WordleR "starter word," verify that any other word on the `short_list` can be reached by the WordleR "algorithm."
+
+**WordleR Algorithm:**
+
+1. Select a starter word, usually ABOUT (the most frequent five-letter word in English) or one of AUDIO, BAYOU, ADIEU, OUIJA, or YOUSE (the top words with four vowels). 
+   * UPDATE: After many test runs, we simply use **BAYOU** 
+2. Get Wordle's response:
+   * Letters to exclude (grey squares)
+   * Letters to include (yellow or green squares)
+   * Letters to exclude by position (yellow)
+   * Letters to include by position (green)
+3. Modify the word list based on these results to reveal the remaining possible words. 
+4. Select WordleR's top recommendation and submit to Wordle. 
+
+**WordleR "Autoplay" Algorithm:**
+
+For each starter word from `c("ABOUT","AUDIO","BAYOU","ADIEU","OUIJA","YOUSE")`:
+
+1. The `starter` word is the first `test` word in the outer loop (could be manual)
+2. Select the next `challenge` word from `short_list` (emulates Wordle's hidden word)
+3. Evaluate `test` against the current `challenge`:
+   * Letters to exclude: What letters aren't present at all?
+   * Letters to include: What letters are present
+   * Letters to exclude by position: What letters don't match, by position?
+   * Letters to include by position: What letters are perfect matches, by position?
+4. Modify the word list based on these results to reveal the remaining possible words. 
+5. Select the top word (first word in the remaining list) as the new test word
+6. Repeat until `test` matches a member of `short_list` or the end of `short_list` is reached. 
+
+##Exclusion/Inclusion Functions
+
+These implement the WordleR exclude/exclude buttons...
+
+```{r}
+# Filter a list of words based on a letter to exclude
+exclude_letter <- function(letter,word_list) {
+    exclude_mask <- !grepl(letter, word_list, fixed = TRUE)
+    return(word_list[exclude_mask])
+}
+
+# Filter a list of words based on a letter to include
+include_letter <- function(letter,word_list) {
+    include_mask <- grepl(letter, word_list, fixed = TRUE)
+    return(word_list[include_mask])
+}
+  
+exclude_letter_position <- function(letter,position,word_list){
+    exclude_mask <- str_sub(word_list, position, position) != letter
+    return(word_list[exclude_mask])
+}
+  
+include_letter_position <- function(letter,position,word_list) {
+    include_mask <- str_sub(word_list, position, position) == letter
+    return(word_list[include_mask])
+}
+
+
+# Filter a list of words based on a list of letters to exclude
+exclude_letters <- function(letter_list,word_list) {
+  result <- word_list
+  for (letter in letter_list) {
+    result <- exclude_letter(letter,result)
+  }
+  return(result)
+}
+
+# Filter a list of words based on a list of letters to include
+include_letters <- function(letter_list,word_list) {
+  result <- word_list
+  for (letter in letter_list) {
+    result <- include_letter(letter,result)
+  }
+  return(result)
+}
+
+```
+
+##Wordle Tester
+
+This returns a list containing the equivalent of Wordle's evaluation of our attempt: Letters to exclude or include, and positions when appropriate.
+
+```{r}
+
+word_test <- function(test,challenge) {
+  
+  test <- strsplit(test,"")[[1]]
+  challenge <- strsplit(challenge,"")[[1]]
+  
+  # letters in `test` that are not in `challenge`
+  no_match <- test[!(test == challenge)]
+   
+  # letters in `test` that are also in `challenge`
+  match <- test[(test == challenge)]
+  
+  # letter/position matching
+  # These are perfect matches
+  match_mask <- test == challenge  # TRUEs are "green"
+  not_match_mask <- test != challenge  # TRUEs are "green"
+
+  # What letters/positions should be "green"?
+  green_match <- test[match_mask] # green letters
+  green_match_pos <- which(match_mask)
+  
+  # What letters/positions should be "yellow"?
+  yellow_match <- test[not_match_mask] # green letters
+  yellow_match_pos <- which(not_match_mask)
+  
+  # for (letter in yellow_match ) {
+  #   letter_pos <- which(test == letter)
+  #   yellow_match_pos <- c(yellow_match_pos, letter_pos)
+  # }
+  
+  result <- list(no_match,match,green_match,green_match_pos,yellow_match,yellow_match_pos)
+  
+  return(result)
+}
+
+```
+
+## Run the WordleR algorithm
+
+* Test our guess (`attempt`) against the `challenge` word (the selected word from the list)
+* Get the Wordle evaluation
+* If the evaluation is a perfect match, exit!
+* If not, use the evaluation to trim the list
+* Refresh the `attempt` word; use the first word in list of remaining possibilities
+* Continue until we achieve a perfect match
+
+```{r message=FALSE, results='hide'}
+#registerDoParallel(numCores)  
+
+iteration_results <- data.frame(starter=character(),
+                                challenge=character(),
+                                iteration=integer())
+```
+
+```{r message=FALSE, results='hide'}
+
+# Test against a list of potential starter words. 
+#for (starter in c("about","adieu","audio","bayou","ouija","youse")) {
+for (starter in c("arose", "rates", "tears", "stare", "aster", "raise", "arise")) {
+#for (starter in c("bayou")) {aeons
+#for (starter in c("aeons")) {
+
+# k is the range of challenge words we test against
+for (k in 1:length(short_list)) {
+challenge <- short_list[k]
+
+# Re-initialize for next challenge word  
+iteration <- as.integer(0)
+word_list <- short_list
+attempt <- starter  # Our first `attempt` is always our `starter` word
+
+# Execute the WordleR algorithm
+# `attempt` is the first entry in what remains of `word_list`
+while ((length(word_list) != 0) && (!is.na(attempt) && (attempt != challenge))) {
+  iteration <- as.integer(iteration + 1)
+
+  # This is the Wordle evaluation!
+  wordle_result <- word_test(attempt, challenge)
+  
+  # Exclude
+  if (length(wordle_result[[1]])!=0)  {
+    # Don't remove letters that are also includes
+    # Use our own function to do the work!
+     if (length(wordle_result[[2]])!=0){
+       # Remove included letters from exclude list, if any 
+       exclude_list <- exclude_letters(wordle_result[[2]],wordle_result[[1]])
+     } else {
+       # Otherwise, the list is okay
+       exclude_list <- wordle_result[[1]]
+     }
+    word_list <- exclude_letters(exclude_list,word_list)
+  }
+  
+  # Include
+  if (length(wordle_result[[2]])!=0){
+    word_list <- include_letters(wordle_result[[2]],word_list)
+  }
+
+  # Include by position 
+  if (length(wordle_result[[3]])!=0){
+    for (letter in wordle_result[[3]]){
+      letter_pos <- which(strsplit(attempt,"")[[1]] == letter)[1]
+      word_list <- include_letter_position(letter,letter_pos,word_list)
+    }
+  }
+
+  # Exclude by position
+  if (length(wordle_result[[5]])!=0){
+    for (letter in wordle_result[[5]]){
+      letter_pos <- which(strsplit(attempt,"")[[1]] == letter)[1]
+      word_list <- exclude_letter_position(letter,letter_pos,word_list)
+    }
+  }
+  
+  # Choose the next attempt from the remains of `word_list
+  if (length(word_list) != 0) { 
+      attempt <- word_list[1]
+#      print(paste0("attempt: ",attempt))
+  } else {
+#    print("Error!")
+  }
+}
+
+iteration_results <- rbind(iteration_results,cbind(starter,challenge,iteration=iteration+1)) %>%
+  mutate(iteration = as.integer(iteration))
+
+} # end of challenge list
+} # end of starter list
+
+iteration_results$starter <- as.factor(iteration_results$starter)
+#stopImplicitCluster()
+```
+
+## The Bottom Line!
+
+```{r}
+
+for (word in c("bayou","adieu","youse","audio","about","ouija","trace")) {
+#for (word in c("bayou")) {
+print(paste0("Results for: ",word))
+print(summary(iteration_results[iteration_results$starter==word,]$iteration > 6))
+
+}
+
+iteration_results_misses <- iteration_results %>% 
+  filter(starter=="bayou") %>%
+  filter(iteration > 6)
+
+iteration_results_misses 
+```
+
+
+```{r}
+as.data.frame(iteration_results) %>% 
+  filter(starter=="aeons") %>%
+ggplot(aes(iteration)) + 
+  geom_histogram(stat = "count",fill="#6aa84f") + 
+  xlab("Iterations Required") + 
+  scale_x_discrete(limits=c(1,2,3,4,5,6,7,8,9,10)) +
+  scale_y_continuous(trans='log10') +
+  ylab("Wordle Puzzles Solved") +
+  labs(
+  title = "Iterations required by WordleR Algorithm to solve Wordle puzzles",
+  subtitle = "Starter word: AEONS",
+  caption = "Based on the 2315-element Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR")
+``` 
+
+
+```{r}
+p <- as.data.frame(iteration_results) %>%
+#    filter(starter=="bayou") %>%
+ggplot(aes(iteration,color=starter)) + 
+  geom_density(stat = "count") + 
+  xlab("Iterations Required") + 
+  scale_x_discrete(limits=c(1,2,3,4,5,6,7,8,9)) +
+  scale_y_continuous(trans='log10') +
+  ylab("Wordle Puzzles Solved") +
+  labs(
+  title = "Iterations required by WordleR Algorithm to solve Wordle puzzles",
+#  subtitle = "Starter word: BAYOU",
+  caption = "Based on the 2315-element Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR") + 
+  geom_vline(xintercept = 6)
+
+ggsave(plot=p,filename = "all_starter_words.png")
+```
