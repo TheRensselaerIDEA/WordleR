@@ -3,18 +3,17 @@
 
 Live app: https://olyerickson.shinyapps.io/wordler/
 
-a. **WordleR** is based on Knuth's list of 5757 most comment five-letter words:
-<br/>&nbsp;&nbsp;&nbsp;https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt
+a. Based on the list of [2315 Wordle 'Magic Words'](https://bit.ly/32tqaWj). See also [here](https://docs.google.com/spreadsheets/d/1-M0RIVVZqbeh0mZacdAsJyBrLuEmhKUhNaVAI-7pr2Y/edit#gid=0).
 
-b. Knuth's list was narrowed to 3000 words based on this analysis of English word frequency:
-<br/>&nbsp;&nbsp;&nbsp;https://www.kaggle.com/rtatman/english-word-frequency
+b. WordleR arranges the remaining possible words based on the frequencies of the letters of thoses words in the English language. Words with reoccurring letters are de-emphasized.
 
-c. According to news reports, Wordle is actually based on a list of [2315 five-letter words](https://www.reddit.com/r/wordle/comments/s4tcw8/a_note_on_wordles_word_list/).
+c. WordleR's recommended 'starter' words are the top four-vowel words in Knuth's list:<br>
+https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt
 
-d. Wordler's recommended starter words are the top four-vowel words in Knuth's list: AUDIO, BAYOU, ADIEU, OUIJA and YOUSE.
+d. WordleR's list of 'possible' guesses is only a subset of 50 matching words.
 
-e. Wordler's list of 'possible' guesses is a subset of 50 matching words, in word frequency order. WordleR's current guess is the top remaining most-frequent word.
+e. [This page](https://gist.github.com/colmmacc/5783eb809f5714c30d8a8ee759e0af59) contains some useful insights on letter and word frequency.
 
 f. WordleR is powered by R, the world's greatest data analytics language!
 
-g. WordleR source code available at: https://github.com/TheRensselaerIDEA/WordleR
+g. WordleR source code and a related R Notebook are available at: https://github.com/TheRensselaerIDEA/WordleR
