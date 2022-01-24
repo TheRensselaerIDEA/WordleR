@@ -4,11 +4,13 @@ library(tidyverse)
 
 # Initialize our word list
 # select the top n words by frequency from Knuth's list
-short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words, sorted by frequency
+#short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words, sorted by frequency
+short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by their word frequency score
 
-# select the top n words by frequency from Knuth's list
-n <- 3000
+# select the top n words by frequency from word list (Wordle or Knuth)
+n <- nrow(short_list.df)
 
+# Make it a vector
 short_list <- short_list.df[1:n,]$word
 
 # We gratuitously display a subset of words
@@ -23,11 +25,9 @@ ui <- fluidPage(
   img(src='WordleR.png', align = "left"),
   titlePanel("An R-based WORDLE Helper"),
 #  tags$p("NOTE: WordleR may behave strangely on iOS devices. It works perfectly in desktop browsers..."),
-  tags$h3("1. Start by entering",
-          tags$b(tags$a(href="https://fivethirtyeight.com/features/can-you-design-the-perfect-wedding/","TRACE")),
-          "or a vowel-rich starter word into",  
-          tags$a(href="https://www.powerlanguage.co.uk/wordle/","WORDLE"), ", like", 
-          tags$b("AUDIO, BAYOU, ADIEU, OUIJA"),"or",tags$b("YOUSE.")),
+  tags$h3("1. Start by entering a vowel-rich starter word into",  
+          tags$a(href="https://www.powerlanguage.co.uk/wordle/","WORDLE"), ", like:", tags$br(),
+          tags$b("BAYOU, ADIEU, YOUSE, AUDIO, ABOUT or OUIJA")),
 #  tags$br(),
   tags$h3("2. Filter the list of possible words based on WORDLE's response:"),
   tags$table(
@@ -71,19 +71,15 @@ ui <- fluidPage(
   ),
   tags$br(),
   tags$h4("Notes:"),
-  tags$p("a. Based on Knuth's list of 5757 most common five-letter words:", 
-          tags$a(href="https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt","https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt")),
-  tags$p("b. Knuth's list was narrowed to 3000 words based on ",
-          tags$a(href="https://www.kaggle.com/rtatman/english-word-frequency","this analysis of English word frequency.")),
-  tags$p("c. According to news reports, Wordle is actually based on a list of approx 2500 five-letter words. 
-         See the exact list",tags$a(href="https://docs.google.com/spreadsheets/d/1-M0RIVVZqbeh0mZacdAsJyBrLuEmhKUhNaVAI-7pr2Y/edit#gid=0","here.")),
-  tags$p("d. ",tags$b(tags$a(href="https://fivethirtyeight.com/features/can-you-design-the-perfect-wedding/","TRACE")),
-         "is recommended as a starter word based on ",
-         tags$a(href="https://fivethirtyeight.com/features/can-you-design-the-perfect-wedding/","this FiveThirtyEight article."),
-         "WordleR's other recommended starter words are the top",tags$i("four-vowel"), "words in Knuth's list"),  
-  tags$p("e. WordleR's list of 'possible' guesses is a subset of", guess_length, "matching words, in word frequency order. WordleR's current guess is the top remaining most-frequent word."),
+  tags$p("a. Based on the list of", tags$a(href="https://bit.ly/32tqaWj","2315 Wordle 'Magic Words'. See also"), 
+         tags$a(href="https://docs.google.com/spreadsheets/d/1-M0RIVVZqbeh0mZacdAsJyBrLuEmhKUhNaVAI-7pr2Y/edit#gid=0","here."),
+  tags$p("b. WordleR arranges the remaining possible words based on the frequencies of the letters of thoses words in the English language. 
+         Words with reoccurring letters are de-emphasized.")),
+  tags$p("c. WordleR's recommended 'starter' words are the top",tags$i("four-vowel"), "words in Knuth's list"),  
+  tags$p("d. WordleR's list of 'possible' guesses is only a subset of", guess_length, "matching words."),
+  tags$p("e. ",tags$a(href="https://gist.github.com/colmmacc/5783eb809f5714c30d8a8ee759e0af59","This page"),"contains some useful insights on letter and word frequency."),
   tags$p("f. WordleR is powered by R, the world's greatest data analytics language!"),
-  tags$p("g. WordleR source code available at:",
+  tags$p("g. WordleR source code and a related R Notebook are available at:",
          tags$a(href="https://github.com/TheRensselaerIDEA/WordleR","https://github.com/TheRensselaerIDEA/WordleR"))
 )
 

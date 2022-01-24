@@ -27,6 +27,26 @@ There are many possible word lists, from Knuth (5757 words) to Kaggle (over 39k)
 #short_list.df <- unigram_freq
 #short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words, sorted by frequency
 short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words
+
+# # NEW: Re-arrange short-list based on letter frequency!
+# # Only do once...
+# short_list.df$score <- NA
+# 
+# for (test in short_list.df$word) {
+#   # De-emphasize duplicate letters!!!
+#   test_vect <- unique(strsplit(test,"")[[1]])
+#   score <- 0
+#   for (test_letter in test_vect) {
+#     letter_score <- letter_freq$freq[which(letter_freq$letter == test_letter)]
+#     score <- score + letter_score
+#   }
+#   short_list.df$score[short_list.df$word==test] <- score
+# }
+# # Re-arrange
+# short_list.df <- short_list.df %>% arrange(desc(score))
+# # Save the re-ordered Wordle list
+# saveRDS(short_list.df, "Wordle_Words.Rds")
+
 # short_list.df <- data.frame(short_list.df)
 # colnames(short_list.df) <- c("word")
 
@@ -36,7 +56,10 @@ n <- nrow(short_list.df)
 # short_list_freq <- short_list_freq %>% arrange(desc(count))
 # saveRDS(short_list_freq, "short_list.Rds")
 short_list <- short_list.df[1:n,]$word
-
+#short_list <- short_list[1:3000]
+trial_words <- c("bayou","audio","equal",
+                 "ouija","adieu",
+                 "noisy","ousia","miaou")
 ```
 
 ## The Challenge
@@ -180,10 +203,7 @@ iteration_results <- data.frame(starter=character(),
 ```{r message=FALSE, results='hide'}
 
 # Test against a list of potential starter words. 
-#for (starter in c("about","adieu","audio","bayou","ouija","youse")) {
-for (starter in c("arose", "rates", "tears", "stare", "aster", "raise", "arise")) {
-#for (starter in c("bayou")) {aeons
-#for (starter in c("aeons")) {
+for (starter in trial_words) {
 
 # k is the range of challenge words we test against
 for (k in 1:length(short_list)) {
@@ -238,9 +258,9 @@ while ((length(word_list) != 0) && (!is.na(attempt) && (attempt != challenge))) 
   }
   
   # Choose the next attempt from the remains of `word_list
+  # NOTE: word_list pre-arranged by letler frequency score
   if (length(word_list) != 0) { 
-      attempt <- word_list[1]
-#      print(paste0("attempt: ",attempt))
+    attempt <- word_list[1]
   } else {
 #    print("Error!")
   }
@@ -259,52 +279,121 @@ iteration_results$starter <- as.factor(iteration_results$starter)
 ## The Bottom Line!
 
 ```{r}
-
-for (word in c("bayou","adieu","youse","audio","about","ouija","trace")) {
-#for (word in c("bayou")) {
-print(paste0("Results for: ",word))
-print(summary(iteration_results[iteration_results$starter==word,]$iteration > 6))
-
-}
+# #for (word in c("arose", "rates", "tears", "stare", "aster", "raise", "arise")) {
+# for (word in trial_words) {
+# 
+# #for (word in c("bayou","adieu","youse","audio","about","ouija","trace")) {
+# #for (word in c("bayou")) {                     
+# print(paste0("Results for: ",word))
+# print(summary(iteration_results[iteration_results$starter==word,]$iteration > 6))
+# 
+# }
 
 iteration_results_misses <- iteration_results %>% 
-  filter(starter=="bayou") %>%
+#  filter(starter=="bayou") %>%
   filter(iteration > 6)
 
 iteration_results_misses 
+missed_words <- iteration_results[iteration_results$iteration > 6,]
+
+write_csv(missed_words,"missed_words_2315.csv")
+
+# What starter words win the most? (ie six iterations or less)
+# Filter by iterations
+iteration_results_wins <- iteration_results %>% 
+  filter(iteration <= 6)
+
+iteration_results_summary <- iteration_results_wins %>%
+  group_by(starter, as.factor(iteration)) %>%
+  summarise(n=n())
+
+iteration_results_starter_success <- iteration_results_summary %>%
+  group_by(starter) %>%
+  summarise(iteration_total = sum(n)) %>%
+  arrange(desc(iteration_total))
+
+# Re-write our trial_words based on top test results
+#trial_words <- iteration_results_starter_success$starter[1:20]
 ```
 
 
 ```{r}
-as.data.frame(iteration_results) %>% 
-  filter(starter=="aeons") %>%
-ggplot(aes(iteration)) + 
-  geom_histogram(stat = "count",fill="#6aa84f") + 
+iteration_results %>% 
+#  filter(starter=="bayou") %>%
+ggplot(aes(iteration, fill=starter)) + 
+#  geom_histogram(stat = "count",fill="#6aa84f") + 
+  geom_bar(stat = "count",position = position_dodge()) + 
   xlab("Iterations Required") + 
   scale_x_discrete(limits=c(1,2,3,4,5,6,7,8,9,10)) +
   scale_y_continuous(trans='log10') +
   ylab("Wordle Puzzles Solved") +
   labs(
   title = "Iterations required by WordleR Algorithm to solve Wordle puzzles",
-  subtitle = "Starter word: AEONS",
+#  subtitle = "Starter word: bayou",
   caption = "Based on the 2315-element Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR")
 ``` 
 
 
 ```{r}
 p <- as.data.frame(iteration_results) %>%
-#    filter(starter=="bayou") %>%
+    # filter(starter!="ouija") %>%
+    # filter(starter!="louie") %>%
+    # filter(starter!="adieu") %>%
 ggplot(aes(iteration,color=starter)) + 
   geom_density(stat = "count") + 
   xlab("Iterations Required") + 
-  scale_x_discrete(limits=c(1,2,3,4,5,6,7,8,9)) +
+  scale_x_discrete(limits=c(1,2,3,4,5,6,7,8,9,10)) +
   scale_y_continuous(trans='log10') +
   ylab("Wordle Puzzles Solved") +
   labs(
   title = "Iterations required by WordleR Algorithm to solve Wordle puzzles",
-#  subtitle = "Starter word: BAYOU",
+  subtitle = "Comparing four-vowel starter words",
   caption = "Based on the 2315-element Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR") + 
+#  caption = "Based on the top 3000 words on the 5757-word Knuth most-frequent-word list\nVisit WordleR at: http://bit.ly/WordleR") + 
   geom_vline(xintercept = 6)
 
-ggsave(plot=p,filename = "all_starter_words.png")
+ggsave(plot=p,filename = "4_vowel_starter_words.png")
+p
+```
+
+##Test new approaches to ranking
+
+```{r}
+letter_freq <- readRDS("letter_freq.Rds")
+
+test_list <- c("about","other","which","their","there","first",
+               "would","these","click","price","state","email",
+               "world","music","after","video","where","books",
+               "links","years","order","items","group","under",
+               "games","could","great","hotel","store","terms",
+               "right","local","those","using","phone","forum",
+               "based","black","check","index","being","women",
+               "today","south","pages","found","house","photo")
+
+test_list.df <- data.frame(word=test_list, score=NA)
+
+for (test in test_list) {
+  test_vect <- strsplit(test,"")[[1]]
+  score <- 0
+  for (test_letter in test_vect) {
+    letter_score <- letter_freq$freq[which(letter_freq$letter == test_letter)]
+    score <- score + letter_score
+  }
+  test_list.df$score[test_list.df$word==test] <- score
+}
+
+test_list.df <- test_list.df %>% arrange(desc(score))
+
+attempt <- "bayou"
+
+# Based on edit distance
+  if (length(test_list) != 0) { 
+    rank <- which(stringdist(attempt,test_list)== max(stringdist(attempt,test_list)))[1]
+    attempt <- test_list[rank]
+  } 
+
+attempt
+
+# scoring letter frequency 
+
 ```
