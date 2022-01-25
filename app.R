@@ -27,7 +27,7 @@ ui <- fluidPage(
 #  tags$p("NOTE: WordleR may behave strangely on iOS devices. It works perfectly in desktop browsers..."),
   tags$h3("1. Start by entering a vowel-rich starter word into",  
           tags$a(href="https://www.powerlanguage.co.uk/wordle/","WORDLE"), ", like:", tags$br(),
-          tags$b("BAYOU, ADIEU, YOUSE, AUDIO, ABOUT or OUIJA")),
+          tags$b("BAYOU, AUDIO, EQUAL, OUIJA, ADIEU, or NOISY")),
 #  tags$br(),
   tags$h3("2. Filter the list of possible words based on WORDLE's response:"),
   tags$table(

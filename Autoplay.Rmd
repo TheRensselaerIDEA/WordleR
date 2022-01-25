@@ -20,16 +20,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 There are many possible word lists, from Knuth (5757 words) to Kaggle (over 39k). Ultimately we found the list of 2315 Wordle "Magic Words..."
 
+Our default is to load the Wordle Magic Word list, arranged by the frequency of letters in each word and de-emphasizing duplicate letters. Other word list options are available for testing and analysis. 
+
 ```{r}
 # The usual setup
 # Initialize our word list
 #unigram_freq <- readRDS("unigram_freq.Rds") # From Kaggle
 #short_list.df <- unigram_freq
 #short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words, sorted by frequency
-short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words
+short_list.df <- readRDS("Wordle_Words.Rds") # DEFAULT: Load "official" Wordle Magic Words
 
 # # NEW: Re-arrange short-list based on letter frequency!
-# # Only do once...
+# # Only do once, when initializing a new word list (e.g. Wordle words)
 # short_list.df$score <- NA
 # 
 # for (test in short_list.df$word) {
@@ -47,16 +49,12 @@ short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words
 # # Save the re-ordered Wordle list
 # saveRDS(short_list.df, "Wordle_Words.Rds")
 
-# short_list.df <- data.frame(short_list.df)
-# colnames(short_list.df) <- c("word")
-
-# select the top n words by frequency from Knuth's list
+# select the top n words by frequency from the selected word list
 n <- nrow(short_list.df)
-# short_list_freq <- left_join(short_list.df,unigram_freq,by="word")
-# short_list_freq <- short_list_freq %>% arrange(desc(count))
-# saveRDS(short_list_freq, "short_list.Rds")
+
 short_list <- short_list.df[1:n,]$word
-#short_list <- short_list[1:3000]
+
+# Initialize some useful potential starter words, for analysis
 trial_words <- c("bayou","audio","equal",
                  "ouija","adieu",
                  "noisy","ousia","miaou")
@@ -66,21 +64,23 @@ trial_words <- c("bayou","audio","equal",
 
 **Overview:** For each recommended WordleR "starter word," verify that any other word on the `short_list` can be reached by the WordleR "algorithm."
 
-**WordleR Algorithm:**
+**WordleR "Manual" Algorithm:**
 
-1. Select a starter word, usually ABOUT (the most frequent five-letter word in English) or one of AUDIO, BAYOU, ADIEU, OUIJA, or YOUSE (the top words with four vowels). 
-   * UPDATE: After many test runs, we simply use **BAYOU** 
+Assumes a word list (challenge words and potential guesses) arranged by scoring the word frequency of each letter of each word, and not scoring for multiple occurrences of a letter. 
+
+1. Select a starter word, for example one of `r trial_words`. 
+   * After many test runs, we usually just use **BAYOU** 
 2. Get Wordle's response:
    * Letters to exclude (grey squares)
    * Letters to include (yellow or green squares)
    * Letters to exclude by position (yellow)
    * Letters to include by position (green)
-3. Modify the word list based on these results to reveal the remaining possible words. 
+3. Modify the word list based on these results to reveal the remaining possible words. By pre-arranging the word list based on the frequency of each letter, we hope to increase the amount of "information" returned by Wordle for each of our guesses. 
 4. Select WordleR's top recommendation and submit to Wordle. 
 
 **WordleR "Autoplay" Algorithm:**
 
-For each starter word from `c("ABOUT","AUDIO","BAYOU","ADIEU","OUIJA","YOUSE")`:
+For each starter word from `r trial_words`:
 
 1. The `starter` word is the first `test` word in the outer loop (could be manual)
 2. Select the next `challenge` word from `short_list` (emulates Wordle's hidden word)
@@ -89,7 +89,9 @@ For each starter word from `c("ABOUT","AUDIO","BAYOU","ADIEU","OUIJA","YOUSE")`:
    * Letters to include: What letters are present
    * Letters to exclude by position: What letters don't match, by position?
    * Letters to include by position: What letters are perfect matches, by position?
-4. Modify the word list based on these results to reveal the remaining possible words. 
+   * Update our data structure holding the results needed to guide our exclusion and inclusion steps.
+3. Modify the word list based on these results to reveal the remaining possible words. 
+   * By pre-arranging the word list based on the frequency of each letter, we hope to increase the amount of "information" returned by Wordle for each of our guesses. 
 5. Select the top word (first word in the remaining list) as the new test word
 6. Repeat until `test` matches a member of `short_list` or the end of `short_list` is reached. 
 
@@ -279,18 +281,10 @@ iteration_results$starter <- as.factor(iteration_results$starter)
 ## The Bottom Line!
 
 ```{r}
-# #for (word in c("arose", "rates", "tears", "stare", "aster", "raise", "arise")) {
-# for (word in trial_words) {
-# 
-# #for (word in c("bayou","adieu","youse","audio","about","ouija","trace")) {
-# #for (word in c("bayou")) {                     
-# print(paste0("Results for: ",word))
-# print(summary(iteration_results[iteration_results$starter==word,]$iteration > 6))
-# 
-# }
+# Aggregate the results
 
 iteration_results_misses <- iteration_results %>% 
-#  filter(starter=="bayou") %>%
+#  filter(starter=="bayou") %>% # In case we want results for one word
   filter(iteration > 6)
 
 iteration_results_misses 
