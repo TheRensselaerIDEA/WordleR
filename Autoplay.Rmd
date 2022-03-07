@@ -1,37 +1,48 @@
 ---
 title: "WordleR Performance Analysis (aka 'Autoplayer')"
 author: "John Erickson"
-date: "1/22/2022"
+date: "07 Mar 2022"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 library(tidyverse)
-# library(foreach)
-# library(doParallel)
-# 
-# numCores <- detectCores()
-# numCores
 
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## The Challenge: Are there any Wordle puzzles that WordleR can't find?
 
-There are many possible word lists, from Knuth (5757 words) to Kaggle (over 39k). Ultimately we found the list of 2315 Wordle "Magic Words..."
+There are many possible "challenge" word lists to test the WordleR algorithm against, including Knuth (5757 words) and Kaggle (over 39k). Ultimately we found the Wordle "Magic Words" list (2315 words).
 
-Our default is to load the Wordle Magic Word list, arranged by the frequency of letters in each word and de-emphasizing duplicate letters. Other word list options are available for testing and analysis. 
+Our default setup for this notebook is to load the Wordle Magic Word list, _arranged by scoring each word by the frequency of its letters with respect to the entire list_, de-emphasizing duplicate letters. "For completeness" other word list options are available in the code comments for testing and analysis, and a few utility code snippets are embedded to help with hacking when needed.
+
+## Initialize the "challenge word" list: 39k words (Kaggle), 5757 words (Knuth) or 2315 words (Wordle)
 
 ```{r}
-# The usual setup
-# Initialize our word list
-#unigram_freq <- readRDS("unigram_freq.Rds") # From Kaggle
-#short_list.df <- unigram_freq
-#short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words, sorted by frequency
-short_list.df <- readRDS("Wordle_Words.Rds") # DEFAULT: Load "official" Wordle Magic Words
+# Initialize our word list: 39k words (Kaggle), 5757 words (Knuth) or 2315 words (Wordle)
+#short_list.df <- readRDS("unigram_freq.Rds") # Kaggle's 39K words, sorted by frequency
+#short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words, sorted by letter frequency
+short_list.df <- readRDS("Wordle_Words.Rds") # DEFAULT: "Official" Wordle Magic Words, by letter freq
+
+# NEW: Code to analyze a word list (in short_list.df) and create a letter frequency dataframe
+
+# letter_freq <- data.frame(letter=letters,freq=0)
+# 
+# for (test in short_list.df$word) {
+#   test_vect <- unique(strsplit(test,"")[[1]])
+#   for (test_letter in test_vect) {
+#     letter_freq$freq[which(letter_freq$letter == test_letter)] <- letter_freq$freq[which(letter_freq$letter == test_letter)] + 1
+#   }
+# }
+# 
+# saveRDS(letter_freq, "letter_freq_knuth.Rds")
+
+#letter_freq.df <- readRDS("letter_freq.Rds") # Letter freq in Wordle words
+#letter_freq.df <- readRDS("letter_freq_knuth.Rds") # Letter freq in Knuth's words
 
 # # NEW: Re-arrange short-list based on letter frequency!
-# # Only do once, when initializing a new word list (e.g. Wordle words)
+# # Only do once, when initializing a new word list (e.g. Wordle or Knuth words)
 # short_list.df$score <- NA
 # 
 # for (test in short_list.df$word) {
@@ -46,18 +57,46 @@ short_list.df <- readRDS("Wordle_Words.Rds") # DEFAULT: Load "official" Wordle M
 # }
 # # Re-arrange
 # short_list.df <- short_list.df %>% arrange(desc(score))
-# # Save the re-ordered Wordle list
-# saveRDS(short_list.df, "Wordle_Words.Rds")
+# # # Save the re-ordered Wordle list
+# # saveRDS(short_list.df, "Wordle_Words.Rds")
+# saveRDS(short_list.df, "short_list.Rds")
 
 # select the top n words by frequency from the selected word list
 n <- nrow(short_list.df)
 
 short_list <- short_list.df[1:n,]$word
+```
 
-# Initialize some useful potential starter words, for analysis
-trial_words <- c("bayou","audio","equal",
-                 "ouija","adieu",
-                 "noisy","ousia","miaou")
+## Create a starter word list, for analysis
+
+We test a mixture of words recommended by various sources:
+
+* The most frequent eEnglish word (ABOUT)
+* Words with three or four vowels
+* A few "Best Wordle Starter Words" from several online sources: YouTubing PhD students, et.al....
+
+```{r}
+# Vowel-rich starter words:
+# trial_words <- c("bayou","audio","equal",
+#                  "ouija","adieu",
+#                  "noisy","ousia","miaou")
+
+# Recommended starter words from the Slate article: https://slate.com/technology/2022/02/perfect-wordle-guessing-strategy.html
+# trial_words <- c("stern","rents","nerts","terns",
+#                  "slart","certs","crest","tyler",
+#                  "larnt","styre")
+
+# Starter words from RPIrates (09 Feb 2022)
+trial_words <- c("equal","bayou","stare","query",
+                 "adieu","proxy","about","crane",
+                 "stern","slart","crest","tyler",
+                 "larnt","styre")
+
+# Testing "crane" (allegedly the best starter word) vs "equal"
+# YouTuber story: https://www.notebookcheck.net/YouTuber-deduces-Crane-as-Wordle-s-best-starting-word-but-with-a-caveat.598101.0.html
+#trial_words <- c("equal","crane")
+
+
 ```
 
 ## The Challenge
@@ -69,7 +108,7 @@ trial_words <- c("bayou","audio","equal",
 Assumes a word list (challenge words and potential guesses) arranged by scoring the word frequency of each letter of each word, and not scoring for multiple occurrences of a letter. 
 
 1. Select a starter word, for example one of `r trial_words`. 
-   * After many test runs, we usually just use **BAYOU** 
+   * After many test runs, we usually just use **STERN** (Mar 2022)
 2. Get Wordle's response:
    * Letters to exclude (grey squares)
    * Letters to include (yellow or green squares)
@@ -195,7 +234,7 @@ word_test <- function(test,challenge) {
 * Continue until we achieve a perfect match
 
 ```{r message=FALSE, results='hide'}
-#registerDoParallel(numCores)  
+# registerDoParallel(numCores)  
 
 iteration_results <- data.frame(starter=character(),
                                 challenge=character(),
@@ -205,10 +244,12 @@ iteration_results <- data.frame(starter=character(),
 ```{r message=FALSE, results='hide'}
 
 # Test against a list of potential starter words. 
-for (starter in trial_words) {
-
+# We use indices in case we want to parallelize later
+for (i in 1:length(trial_words))  {
+starter <- trial_words[i]
+  
 # k is the range of challenge words we test against
-for (k in 1:length(short_list)) {
+for (k in 1:length(short_list))  {
 challenge <- short_list[k]
 
 # Re-initialize for next challenge word  
@@ -291,6 +332,7 @@ iteration_results_misses
 missed_words <- iteration_results[iteration_results$iteration > 6,]
 
 write_csv(missed_words,"missed_words_2315.csv")
+#write_csv(missed_words,"missed_words_5757.csv")
 
 # What starter words win the most? (ie six iterations or less)
 # Filter by iterations
@@ -303,37 +345,59 @@ iteration_results_summary <- iteration_results_wins %>%
 
 iteration_results_starter_success <- iteration_results_summary %>%
   group_by(starter) %>%
-  summarise(iteration_total = sum(n)) %>%
-  arrange(desc(iteration_total))
+  summarise(total_challenge_wins = sum(n)) %>%
+  arrange(desc(total_challenge_wins))
 
-# Re-write our trial_words based on top test results
-#trial_words <- iteration_results_starter_success$starter[1:20]
+```
+
+## What is the 'Best' Wordle Starter Word?
+
+```{r}
+
+# Plot these results!
+p1 <- ggplot(iteration_results_starter_success, 
+       aes(x=reorder(starter,-total_challenge_wins),y=total_challenge_wins)) +
+  geom_point() +
+  labs(
+    title="What's the 'Best' Wordle Starter Word?",
+    subtitle = "Wordle Challenge Words Found in Six Moves or Less vs Starter Words",
+    caption = "Based on the 2315-element Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR"
+    ) +
+  xlab("WordleR Starter Word") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
+  ylab("Wordle Challenge Words Found") +
+  geom_hline(aes(yintercept = 2315),linetype = "dotdash") +
+  geom_text(label="Wordle Magic Word List: 2315 words", x="equal", y=2315 + 1.5, size=3 )
+
+ggsave(plot=p1,filename = "comparing_starter_words_winners_bar.png")
+p1
+
 ```
 
 
 ```{r}
-iteration_results %>% 
+p2 <- iteration_results %>% 
 #  filter(starter=="bayou") %>%
-ggplot(aes(iteration, fill=starter)) + 
-#  geom_histogram(stat = "count",fill="#6aa84f") + 
+  ggplot(aes(iteration, fill=starter)) + 
   geom_bar(stat = "count",position = position_dodge()) + 
   xlab("Iterations Required") + 
   scale_x_discrete(limits=c(1,2,3,4,5,6,7,8,9,10)) +
   scale_y_continuous(trans='log10') +
   ylab("Wordle Puzzles Solved") +
   labs(
-  title = "Iterations required by WordleR Algorithm to solve Wordle puzzles",
-#  subtitle = "Starter word: bayou",
+  title = "Iterations required by WordleR Algorithm to solve Wordle puzzles", 
+  subtitle = "Testing favorite Wordle starter words (including YouTuber's) ",
   caption = "Based on the 2315-element Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR")
+
+ggsave(plot=p2,filename = "comparing_starter_words_iterations_bar.png")
+p2
+
 ``` 
 
 
 ```{r}
-p <- as.data.frame(iteration_results) %>%
-    # filter(starter!="ouija") %>%
-    # filter(starter!="louie") %>%
-    # filter(starter!="adieu") %>%
-ggplot(aes(iteration,color=starter)) + 
+p3 <- as.data.frame(iteration_results) %>%
+  ggplot(aes(iteration,color=starter)) + 
   geom_density(stat = "count") + 
   xlab("Iterations Required") + 
   scale_x_discrete(limits=c(1,2,3,4,5,6,7,8,9,10)) +
@@ -341,53 +405,11 @@ ggplot(aes(iteration,color=starter)) +
   ylab("Wordle Puzzles Solved") +
   labs(
   title = "Iterations required by WordleR Algorithm to solve Wordle puzzles",
-  subtitle = "Comparing four-vowel starter words",
+  subtitle = "Testing favorite Wordle starter words (including YouTuber's) ",
   caption = "Based on the 2315-element Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR") + 
-#  caption = "Based on the top 3000 words on the 5757-word Knuth most-frequent-word list\nVisit WordleR at: http://bit.ly/WordleR") + 
   geom_vline(xintercept = 6)
 
-ggsave(plot=p,filename = "4_vowel_starter_words.png")
-p
+ggsave(plot=p2,filename = "comparing_starter_words_iterations_line.png")
+p3
 ```
 
-##Test new approaches to ranking
-
-```{r}
-letter_freq <- readRDS("letter_freq.Rds")
-
-test_list <- c("about","other","which","their","there","first",
-               "would","these","click","price","state","email",
-               "world","music","after","video","where","books",
-               "links","years","order","items","group","under",
-               "games","could","great","hotel","store","terms",
-               "right","local","those","using","phone","forum",
-               "based","black","check","index","being","women",
-               "today","south","pages","found","house","photo")
-
-test_list.df <- data.frame(word=test_list, score=NA)
-
-for (test in test_list) {
-  test_vect <- strsplit(test,"")[[1]]
-  score <- 0
-  for (test_letter in test_vect) {
-    letter_score <- letter_freq$freq[which(letter_freq$letter == test_letter)]
-    score <- score + letter_score
-  }
-  test_list.df$score[test_list.df$word==test] <- score
-}
-
-test_list.df <- test_list.df %>% arrange(desc(score))
-
-attempt <- "bayou"
-
-# Based on edit distance
-  if (length(test_list) != 0) { 
-    rank <- which(stringdist(attempt,test_list)== max(stringdist(attempt,test_list)))[1]
-    attempt <- test_list[rank]
-  } 
-
-attempt
-
-# scoring letter frequency 
-
-```
