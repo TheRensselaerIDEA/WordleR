@@ -481,7 +481,9 @@ test word</li>
 <code>short_list</code> or the end of <code>short_list</code> is
 reached.</li>
 </ol>
-<p>##Exclusion/Inclusion Functions</p>
+</div>
+<div id="exclusioninclusion-functions" class="section level2">
+<h2>Exclusion/Inclusion Functions</h2>
 <p>These implement the WordleR exclude/exclude buttons…</p>
 <pre class="r"><code># Filter a list of words based on a letter to exclude
 exclude_letter &lt;- function(letter,word_list) {
@@ -524,10 +526,12 @@ include_letters &lt;- function(letter_list,word_list) {
   }
   return(result)
 }</code></pre>
-<p>##Wordle Simulator</p>
-<p>This is Wordle-as-a-function; it returns a list containing the
-equivalent of Wordle’s evaluation of our attempt, including letters to
-exclude or include, and their positions when appropriate</p>
+</div>
+<div id="wordle-simulator-kernel" class="section level2">
+<h2>Wordle Simulator “kernel”</h2>
+<p>This is <em>Wordle-as-a-function</em>; it returns a list containing
+the equivalent of Wordle’s evaluation of our attempt, including letters
+to exclude or include, and their positions when appropriate</p>
 <pre class="r"><code>word_test &lt;- function(test,challenge) {
   
   test &lt;- strsplit(test,&quot;&quot;)[[1]]
@@ -561,15 +565,15 @@ exclude or include, and their positions when appropriate</p>
 <div id="apply-the-wordler-algorithm" class="section level2">
 <h2>Apply the WordleR algorithm</h2>
 <p>Here we apply the WordleR algorithm to the challenge word list, using
-our setof starter words.</p>
+our set of starter words.</p>
 <ul>
 <li>Test our guess (<code>attempt</code>) against the
 <code>challenge</code> word (the selected word from the list)</li>
 <li>Get the Wordle evaluation</li>
 <li>If the evaluation is a perfect match, exit!</li>
 <li>If not, use the evaluation to trim the list</li>
-<li>Refresh the <code>attempt</code> word; use the first word in list of
-remaining possibilities</li>
+<li>Refresh the <code>attempt</code> word; use the first word in our
+list of remaining possibilities</li>
 <li>Continue until we achieve a perfect match</li>
 </ul>
 <pre class="r"><code># initialize our grand results structure

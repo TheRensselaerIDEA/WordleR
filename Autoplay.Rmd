@@ -132,7 +132,7 @@ For each starter word from `r trial_words`:
 5. Select the top word (first word in the remaining list) as the new test word
 6. Repeat until `test` matches a member of `short_list` or the end of `short_list` is reached. 
 
-##Exclusion/Inclusion Functions
+## Exclusion/Inclusion Functions
 
 These implement the WordleR exclude/exclude buttons...
 
@@ -181,9 +181,9 @@ include_letters <- function(letter_list,word_list) {
 
 ```
 
-##Wordle Simulator
+## Wordle Simulator "kernel"
 
-This is Wordle-as-a-function; it returns a list containing the equivalent of Wordle's evaluation of our attempt, including letters to exclude or include, and their positions when appropriate
+This is _Wordle-as-a-function_; it returns a list containing the equivalent of Wordle's evaluation of our attempt, including letters to exclude or include, and their positions when appropriate
 
 ```{r}
 
@@ -221,13 +221,13 @@ word_test <- function(test,challenge) {
 
 ## Apply the WordleR algorithm
 
-Here we apply the WordleR algorithm to the challenge word list, using our setof starter words.
+Here we apply the WordleR algorithm to the challenge word list, using our set of starter words.
 
 * Test our guess (`attempt`) against the `challenge` word (the selected word from the list)
 * Get the Wordle evaluation
 * If the evaluation is a perfect match, exit!
 * If not, use the evaluation to trim the list
-* Refresh the `attempt` word; use the first word in list of remaining possibilities
+* Refresh the `attempt` word; use the first word in our list of remaining possibilities
 * Continue until we achieve a perfect match
 
 ```{r message=FALSE, results='hide'}
