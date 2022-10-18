@@ -1,16 +1,17 @@
 
 library(shiny)
 library(tidyverse)
+library(utf8)
 
 # Initialize our word list
 # select the top n words by frequency from Knuth's list
 #short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words, sorted by frequency
 short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by their word frequency score
 
-# uggcf://zrqvhz.pbz/@bjralva/urer-yvrf-jbeqyr-2021-2027-shyy-nafjre-yvfg-52017rr99r86
-used_words.df <- readRDS("used_words.Rds")
-
-short_list.df <- anti_join(short_list.df, used_words.df, by="word")
+# # uggcf://zrqvhz.pbz/@bjralva/urer-yvrf-jbeqyr-2021-2027-shyy-nafjre-yvfg-52017rr99r86
+# used_words.df <- readRDS("used_words.Rds")
+# 
+# short_list.df <- anti_join(short_list.df, used_words.df, by="word")
 
 # select the top n words by frequency from word list (Wordle or Knuth)
 n <- nrow(short_list.df)
@@ -29,12 +30,11 @@ ui <- fluidPage(
             ),
   img(src='WordleR.png', align = "left"),
   titlePanel("An R-based WORDLE Helper"),
-#  tags$p("NOTE: WordleR may behave strangely on iOS devices. It works perfectly in desktop browsers..."),
   tags$h3("1. Start by entering a great starter word into",  
-          tags$a(href="https://www.powerlanguage.co.uk/wordle/","WORDLE"), ", like:", 
+          tags$a(href="https://www.nytimes.com/games/wordle/index.html","WORDLE"), ", like:", 
           tags$br(),
-          tags$b("STERN, START, EQUAL, STYLE, CRANE, or BAYOU (see below).")
-          ),
+          tags$b("HEART, HASTE, STARE, STONE, EARTH, TENOR, or IRATE (see below).")
+  ),
 #  tags$br(),
   tags$h3("2. Filter the list of possible words based on WORDLE's response:"),
   tags$table(
@@ -77,19 +77,32 @@ ui <- fluidPage(
                                           style="color: #fff; background-color: #337ab7; border-color: #2e6da4")))
   ),
   tags$br(),
+  tags$h3("5. NEW: Let WordleR generate your Twitter 'brag' post!"), 
+  tags$table(
+  tags$tr(
+      tags$td(selectInput("wordle_brag",choices=c("genius","magnificent","impressive","splendid","great","phew"),label="Select your congrats text:"))
+      ,tags$td(tags$br()),
+      tags$td(textInput("wordle_paste",label="Paste your Wordle result here:", value = ""))
+      ,tags$td(tags$br()),
+      tags$td(htmlOutput("twitter_text"))
+      ,
+      )
+  )
+  ,
+  tags$br(),
   tags$h4("Notes:"),
-  tags$p("a. Based on the ", tags$a(href="https://bit.ly/32tqaWj","list of 2315 Wordle 'Magic Words'. See also"), 
-         tags$a(href="https://docs.google.com/spreadsheets/d/1-M0RIVVZqbeh0mZacdAsJyBrLuEmhKUhNaVAI-7pr2Y/edit#gid=0","here."),
+  tags$p("a. Based on the ", tags$a(href="https://bit.ly/32tqaWj","list of 2315 Wordle 'Magic Words', with used words as of 18 Oct 2022 removed. "), 
+         tags$a(href="https://docs.google.com/spreadsheets/d/1-M0RIVVZqbeh0mZacdAsJyBrLuEmhKUhNaVAI-7pr2Y/edit#gid=0","See also here."),
   tags$p("b. WordleR arranges the remaining possible words based on the frequencies of the letters of those words in the English language. 
          Words with reoccurring letters are de-emphasized.")),
-  tags$p("c. IMPORTANT! Each day WordleR removes previously-used words from the 'Magic Words' list."),
-  tags$p("d. WordleR's recommended 'starter' words are the top starter words as evaluated by the WordleR Autoplayer notebook. See also below."),  
-  tags$p("e. WordleR's list of 'possible' guesses is only a subset of", guess_length, "matching words."),
-  tags$p("f. ",tags$a(href="https://gist.github.com/colmmacc/5783eb809f5714c30d8a8ee759e0af59","This page"),"contains some useful insights on letter and word frequency."),
-  tags$p("g. WordleR is powered by R, the world's greatest data analytics language!"),
-  tags$p("h. WordleR source code and a related R Notebook are available at:",
+  # tags$p("c. IMPORTANT! Each day WordleR removes previously-used words from the 'Magic Words' list."),
+  tags$p("c. WordleR's recommended 'starter' words are the top remaining starter words as evaluated by the WordleR Autoplayer notebook. See the figure below."),  
+  tags$p("d. WordleR's list of 'possible' guesses is only a subset of", guess_length, "matching words."),
+  tags$p("e. ",tags$a(href="https://gist.github.com/colmmacc/5783eb809f5714c30d8a8ee759e0af59","This page"),"contains some useful insights on letter and word frequency."),
+  tags$p("f. WordleR is powered by R, the world's greatest data analytics language!"),
+  tags$p("g. WordleR source code and a related R Notebook are available at:",
          tags$a(href="https://github.com/TheRensselaerIDEA/WordleR","https://github.com/TheRensselaerIDEA/WordleR")),
-img(src='BestWordleRWords.png', align = "right",width="75%")
+img(src='BestWordleRWords.png', align = "right",width="50%")
 )
 
 server <- function(input, output) {
@@ -107,7 +120,21 @@ output$johnsguess <- renderText({
   output$possible_guesses <- renderText({
     length(word_list())
   })
-  
+
+  output$twitter_text <- renderUI({
+    #browser()
+    HTML(paste0('WordleR, the #Rstats-powered #Wordle Helper, was "',input$wordle_brag,'" today!<br/>'),
+#    paste0(strsplit(input$wordle_paste,split = "")[[1]][1:15], collapse = ""),"<br/>",
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][1:15]), paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][1:15],  collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][16:21]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][16:21], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][22:27]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][22:27], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][28:33]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][28:33], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][34:39]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][34:39], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][40:45]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][40:45], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][46:51]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][46:51], collapse = ""),"<br/>"),""),
+    "http://bit.ly/WordleR")
+  })
+    
   observeEvent(input$exclude_button, {
     exclude_mask <- !grepl(input$exclude, word_list(), fixed = TRUE)
     word_list(word_list()[exclude_mask])
