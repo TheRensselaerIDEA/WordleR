@@ -1,4 +1,4 @@
-
+# UPDATE: 18 Mar 2024 ("1,000" issue)
 library(shiny)
 library(tidyverse)
 library(utf8)
@@ -33,7 +33,7 @@ ui <- fluidPage(
   tags$h3("1. Start by entering a great starter word into",  
           tags$a(href="https://www.nytimes.com/games/wordle/index.html","WORDLE"), ", like:", 
           tags$br(),
-          tags$b("HEART, HASTE, STARE, STONE, EARTH, TENOR, or IRATE (see below).")
+          tags$b("RECAP, HASTE, STARE, STONE, EARTH, TENOR, or IRATE (see below).")
   ),
 #  tags$br(),
   tags$h3("2. Filter the list of possible words based on WORDLE's response:"),
@@ -125,13 +125,13 @@ output$johnsguess <- renderText({
     #browser()
     HTML(paste0('WordleR, the #Rstats-powered #Wordle Helper, was "',input$wordle_brag,'" today!<br/>'),
 #    paste0(strsplit(input$wordle_paste,split = "")[[1]][1:15], collapse = ""),"<br/>",
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][1:15]), paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][1:15],  collapse = ""),"<br/>"),""),
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][16:21]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][16:21], collapse = ""),"<br/>"),""),
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][22:27]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][22:27], collapse = ""),"<br/>"),""),
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][28:33]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][28:33], collapse = ""),"<br/>"),""),
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][34:39]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][34:39], collapse = ""),"<br/>"),""),
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][40:45]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][40:45], collapse = ""),"<br/>"),""),
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][46:51]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][46:51], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][1:17]), paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][1:17],  collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][18:23]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][18:23], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][24:29]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][24:29], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][30:35]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][30:35], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][36:41]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][36:41], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][42:47]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][42:47], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][48:53]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][48:53], collapse = ""),"<br/>"),""),
     "http://bit.ly/WordleR")
   })
     
