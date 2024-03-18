@@ -9,9 +9,12 @@ library(utf8)
 short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by their word frequency score
 
 # # uggcf://zrqvhz.pbz/@bjralva/urer-yvrf-jbeqyr-2021-2027-shyy-nafjre-yvfg-52017rr99r86
-# used_words.df <- readRDS("used_words.Rds")
+# used_words.df <- read.csv("used_words.csv")
+# used_words.df$word <- tolower(used_words.df$word)
+# saveRDS(used_words.df,"used_words.df.Rds")
+used_words.df <- readRDS("used_words.df.Rds")
 # 
-# short_list.df <- anti_join(short_list.df, used_words.df, by="word")
+short_list.df <- anti_join(short_list.df, used_words.df, by="word")
 
 # select the top n words by frequency from word list (Wordle or Knuth)
 n <- nrow(short_list.df)
