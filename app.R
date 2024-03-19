@@ -2,6 +2,8 @@
 library(shiny)
 library(tidyverse)
 library(utf8)
+library(rclipboard)
+library(htmltools)
 
 # Initialize our word list
 # select the top n words by frequency from Knuth's list
@@ -9,13 +11,14 @@ library(utf8)
 short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by their word frequency score
 
 # # uggcf://zrqvhz.pbz/@bjralva/urer-yvrf-jbeqyr-2021-2027-shyy-nafjre-yvfg-52017rr99r86
+# Get used words from: https://www.rockpapershotgun.com/wordle-past-answers
 # used_words.df <- read.csv("used_words.csv")
 # used_words.df$word <- tolower(used_words.df$word)
 # saveRDS(used_words.df,"used_words.df.Rds")
 used_words.df <- readRDS("used_words.df.Rds")
 # 
 short_list.df <- anti_join(short_list.df, used_words.df, by="word")
-
+# saveRDS(short_list.df,"short_list.Rds")
 # select the top n words by frequency from word list (Wordle or Knuth)
 n <- nrow(short_list.df)
 
@@ -82,14 +85,23 @@ ui <- fluidPage(
   tags$br(),
   tags$h3("5. NEW: Let WordleR generate your Twitter 'brag' post!"), 
   tags$table(
-  tags$tr(
+  # tags$tr(
+  #     tags$td(selectInput("wordle_brag",choices=c("genius","magnificent","impressive","splendid","great","phew"),label="Select your congrats text:"))
+  #     ,tags$td(tags$br()),
+  #     tags$td(textInput("wordle_paste",label="Paste your Wordle result here:", value = ""))
+  #     ,tags$td(tags$br()),
+  #     tags$td(htmlOutput("twitter_text"))
+  #     ,
+  #     )
+    tags$tr(
       tags$td(selectInput("wordle_brag",choices=c("genius","magnificent","impressive","splendid","great","phew"),label="Select your congrats text:"))
       ,tags$td(tags$br()),
-      tags$td(textInput("wordle_paste",label="Paste your Wordle result here:", value = ""))
-      ,tags$td(tags$br()),
+      tags$td(textInput("wordle_paste",label="Paste your Wordle result here:", value = ""))),
+    tags$tr(
       tags$td(htmlOutput("twitter_text"))
-      ,
-      )
+      ,tags$td(tags$br()),
+      tags$td(uiOutput("twitter_clip"))
+    )
   )
   ,
   tags$br(),
@@ -111,6 +123,8 @@ img(src='BestWordleRWords.png', align = "right",width="50%")
 server <- function(input, output) {
   
 word_list <- reactiveVal(short_list)
+
+twitter_raw <- reactiveVal()
 
 output$johnsguess <- renderText({
   word_list()[1]
@@ -138,6 +152,14 @@ output$johnsguess <- renderText({
     "http://bit.ly/WordleR")
   })
     
+  output$twitter_clip <- renderUI({
+    rclipButton(
+      inputId = "clipbtn", 
+      label = "Copy", 
+      clipText = twitter_raw(),
+      icon = icon("clipboard"))
+  })
+  
   observeEvent(input$exclude_button, {
     exclude_mask <- !grepl(input$exclude, word_list(), fixed = TRUE)
     word_list(word_list()[exclude_mask])
