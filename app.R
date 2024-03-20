@@ -30,6 +30,9 @@ guess_length <- 50
 
 # Set up the (simple) UI...
 ui <- fluidPage(
+  
+  rclipboardSetup(),
+  
   tags$head(tags$style(HTML("pre {white-space: pre-wrap; word-break: keep-all;}")),
             tags$style(HTML("td {vertical-align: top;text-align:center;}")),
             tags$style(HTML("img {float:none;}"))
@@ -106,8 +109,8 @@ ui <- fluidPage(
   ,
   tags$br(),
   tags$h4("Notes:"),
-  tags$p("a. Based on the ", tags$a(href="https://bit.ly/32tqaWj","list of 2315 Wordle 'Magic Words', with used words as of 18 Oct 2022 removed. "), 
-         tags$a(href="https://docs.google.com/spreadsheets/d/1-M0RIVVZqbeh0mZacdAsJyBrLuEmhKUhNaVAI-7pr2Y/edit#gid=0","See also here."),
+  tags$p("a. Based on the ", tags$a(href="https://bit.ly/32tqaWj","list of 2315 Wordle 'Magic Words', with used words as of 19 Mar 2024 removed. "), 
+         tags$a(href="https://www.rockpapershotgun.com/wordle-past-answers","See also here."),
   tags$p("b. WordleR arranges the remaining possible words based on the frequencies of the letters of those words in the English language. 
          Words with reoccurring letters are de-emphasized.")),
   # tags$p("c. IMPORTANT! Each day WordleR removes previously-used words from the 'Magic Words' list."),
@@ -124,7 +127,8 @@ server <- function(input, output) {
   
 word_list <- reactiveVal(short_list)
 
-twitter_raw <- reactiveVal()
+twitter_html <- reactiveVal() # with markup
+twitter_raw <- reactiveVal() # for Mastodon et.al.
 
 output$johnsguess <- renderText({
   word_list()[1]
@@ -140,16 +144,32 @@ output$johnsguess <- renderText({
 
   output$twitter_text <- renderUI({
     #browser()
-    HTML(paste0('WordleR, the #Rstats-powered #Wordle Helper, was "',input$wordle_brag,'" today!<br/>'),
+    wordle_paste <- input$wordle_paste
+    twitter_html(HTML(paste0('WordleR, the #Rstats-powered #Wordle Helper, was "',input$wordle_brag,'" today!<br/>'),
 #    paste0(strsplit(input$wordle_paste,split = "")[[1]][1:15], collapse = ""),"<br/>",
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][1:17]), paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][1:17],  collapse = ""),"<br/>"),""),
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][18:23]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][18:23], collapse = ""),"<br/>"),""),
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][24:29]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][24:29], collapse = ""),"<br/>"),""),
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][30:35]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][30:35], collapse = ""),"<br/>"),""),
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][36:41]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][36:41], collapse = ""),"<br/>"),""),
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][42:47]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][42:47], collapse = ""),"<br/>"),""),
-    ifelse(!anyNA(strsplit(input$wordle_paste,split = "")[[1]][48:53]),paste0(paste0(strsplit(input$wordle_paste,split = "")[[1]][48:53], collapse = ""),"<br/>"),""),
-    "http://bit.ly/WordleR")
+    ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][1:17]), paste0(paste0(strsplit(wordle_paste,split = "")[[1]][1:17],  collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][18:23]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][18:23], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][24:29]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][24:29], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][30:35]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][30:35], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][36:41]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][36:41], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][42:47]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][42:47], collapse = ""),"<br/>"),""),
+    ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][48:53]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][48:53], collapse = ""),"<br/>"),""),
+    "http://bit.ly/WordleR"))
+    
+    twitter_raw(HTML(paste0('WordleR, the #Rstats-powered #Wordle Helper, was "',input$wordle_brag,'" today!\n'),
+                      #    paste0(strsplit(input$wordle_paste,split = "")[[1]][1:15], collapse = ""),"<br/>",
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][1:17]), paste0(paste0(strsplit(wordle_paste,split = "")[[1]][1:17],  collapse = ""),"\n"),""),
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][18:23]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][18:23], collapse = ""),"\n"),""),
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][24:29]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][24:29], collapse = ""),"\n"),""),
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][30:35]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][30:35], collapse = ""),"\n"),""),
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][36:41]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][36:41], collapse = ""),"\n"),""),
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][42:47]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][42:47], collapse = ""),"\n"),""),
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][48:53]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][48:53], collapse = ""),"\n"),""),
+                      "http://bit.ly/WordleR"))
+    
+    twitter_html()
+    
+    
   })
     
   output$twitter_clip <- renderUI({
