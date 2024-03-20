@@ -158,14 +158,14 @@ output$johnsguess <- renderText({
     
     twitter_raw(HTML(paste0('WordleR, the #Rstats-powered #Wordle Helper, was "',input$wordle_brag,'" today!\n'),
                       #    paste0(strsplit(input$wordle_paste,split = "")[[1]][1:15], collapse = ""),"<br/>",
-                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][1:17]), paste0(paste0(strsplit(wordle_paste,split = "")[[1]][1:17],  collapse = ""),"\n"),""),
-                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][18:23]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][18:23], collapse = ""),"\n"),""),
-                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][24:29]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][24:29], collapse = ""),"\n"),""),
-                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][30:35]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][30:35], collapse = ""),"\n"),""),
-                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][36:41]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][36:41], collapse = ""),"\n"),""),
-                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][42:47]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][42:47], collapse = ""),"\n"),""),
-                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][48:53]),paste0(paste0(strsplit(wordle_paste,split = "")[[1]][48:53], collapse = ""),"\n"),""),
-                      "http://bit.ly/WordleR"))
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][1:17]), paste0("",paste0(strsplit(wordle_paste,split = "")[[1]][1:17],  collapse = "")),""),
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][18:23]),paste0("\n",paste0(strsplit(wordle_paste,split = "")[[1]][18:23], collapse = "")),""),
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][24:29]),paste0("\n",paste0(strsplit(wordle_paste,split = "")[[1]][24:29], collapse = "")),""),
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][30:35]),paste0("\n",paste0(strsplit(wordle_paste,split = "")[[1]][30:35], collapse = "")),""),
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][36:41]),paste0("\n",paste0(strsplit(wordle_paste,split = "")[[1]][36:41], collapse = "")),""),
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][42:47]),paste0("\n",paste0(strsplit(wordle_paste,split = "")[[1]][42:47], collapse = "")),""),
+                      ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][48:53]),paste0("\n",paste0(strsplit(wordle_paste,split = "")[[1]][48:53], collapse = "")),""),
+                     "\n","http://bit.ly/WordleR"))
     
     twitter_html()
     
