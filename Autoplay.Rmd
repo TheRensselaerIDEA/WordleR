@@ -3,8 +3,8 @@ title: "WordleR Performance Analysis (aka 'The Autoplayer')"
 author: "John S. Erickson"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -19,7 +19,7 @@ There are many possible "challenge" word lists to test the WordleR algorithm aga
 
 Our default setup for this notebook is to load the Wordle Magic Word list, _re-arranged by scoring each word by the frequency of its letters with respect to the entire list_ and de-emphasizing duplicate letters. "For completeness" other word list options are available in the code comments for testing and analysis, and a few utility code snippets are embedded to help with hacking when needed.
 
-## Initialize the "challenge word" list: 39k words (Kaggle), 5757 words (Knuth) or 2315 words (Wordle)
+## Initialize the "challenge word" list: 39k words (Kaggle), 5757 words (Knuth), 2315 words (Wordle) or Wordle Remaining Words
 
 The "challenge words" comprise the possible words this notebook's Wordle emulator has available to use. In the development of WordleR we tested the algorithm with five-letter word lists from Kaggle and Knuth before settling on the 2315-word Wordle list, obtained through various sources. 
 
@@ -29,8 +29,13 @@ Here we read in the selected word list.
 # Initialize our word list: 39k words (Kaggle), 5757 words (Knuth), 2315 words (Wordle) or 1829 words (Wordle truncated)
 #short_list.df <- readRDS("unigram_freq.Rds") # Kaggle's 39K words, sorted by frequency
 #short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words, sorted by letter frequency
-short_list.df <- readRDS("Wordle_Words.Rds") # DEFAULT: "Official" Wordle Magic Words, by letter freq (truncated 31 Oct 2022)
+#short_list.df <- readRDS("Wordle_Words.Rds") # DEFAULT: "Official" Wordle Magic Words, by letter freq (truncated 31 Oct 2022)
 #short_list.df <- readRDS("used_words_full.Rds") # Full list of Wordle magic words
+
+# 23 Mar 2024: Only use remaining Wordle words (from WordleR)
+used_words.df <- readRDS("used_words.df.Rds")
+short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by their word frequency score
+short_list.df <- anti_join(short_list.df, used_words.df, by="word")
 
 short_list.df <- short_list.df %>% select(word) # Only need 'word' column
 ```
@@ -91,6 +96,7 @@ We test a mixture of words recommended by various sources:
 * The most frequent English word (ABOUT)
 * Words with three or four vowels
 * A few "Best Wordle Starter Words" from several online sources: "YouTubing PhD students," Prof. Horstmeyer, et.al.
+* Exhaustively-tested starter words. 
 
 ```{r}
 # Recommended starter words from the Slate article: https://slate.com/technology/2022/02/perfect-wordle-guessing-strategy.html
@@ -114,9 +120,9 @@ We test a mixture of words recommended by various sources:
 # trial_words <- c("recap","dealt", "adept","clasp","start",
 #                  "stern","strap","clamp","equal")
 
-# NEW: The old recommended starter words have all been used!
-trial_words <- c("heart","recap", "haste","stare",
-                 "stone","earth","tenor","irate")
+# # NEW: The old recommended starter words have all been used!
+# trial_words <- c("heart","recap", "haste","stare",
+#                  "stone","earth","tenor","irate")
 
 # Testing NYTimes' WordleBot Starter Word: 11 Apr 2022
 # trial_words <- c("recap","dealt")
@@ -130,6 +136,23 @@ trial_words <- c("heart","recap", "haste","stare",
 #                  "adieu","proxy","about","crane",
 #                  "stern","slart","crest","tyler",
 #                  "larnt","styre")
+
+# 23 Mar 2024: Long run!
+#trial_words <- short_list.df$word[101:150]
+
+# 23 Mar 2024: Long run, only winners!
+# winners_0150 <- readRDS("winners_0150.Rds")
+# winners_51100 <- readRDS("winners_51100.Rds")
+# winners_101150 <- readRDS("winners_101150.Rds")
+# winners_151200 <- readRDS("winners_151200.Rds")
+# winners_001200 <- rbind(winners_0150,winners_51100,winners_101150,winners_151200)
+#saveRDS(winners_001200,"winners_001200.Rds")
+winners_001200 <- readRDS("winners_001200.Rds")
+trial_words.df <- winners_001200 %>% 
+  select(starter) %>% 
+  rename(word = starter)
+
+trial_words <- unlist(lapply(trial_words.df$word, as.character))
 
 ```
 
@@ -375,7 +398,8 @@ missed_words <- iteration_results[iteration_results$iteration > 6,]
 
 # Save it for later
 #write_csv(missed_words,"missed_words_1829.csv")
-write_csv(missed_words,"missed_words_2315.csv")
+#write_csv(missed_words,"missed_words_2315.csv")
+write_csv(missed_words,"missed_words_23Mar2024.csv")
 #write_csv(missed_words,"missed_words_5757.csv") # The Knuth version
 
 # What starter words "win" most often? (ie six iterations or less)
@@ -401,29 +425,34 @@ Create a summary plot of the results using certain starter words.
 ```{r}
 
 # Plot these results!
+# Total words: 
+words <- nrow(short_list.df)
+
 p1 <- ggplot(iteration_results_starter_success, 
        aes(x=reorder(starter,-total_challenge_wins),y=total_challenge_wins)) +
   geom_point() +
   labs(
     title="What's the 'Best' Wordle Starter Word?",
 #  subtitle = "Testing revised recommended starter word list: 18 Oct 2022",
-  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
+#  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
+  subtitle = paste0("Testing ", length(trial_words)," winning Wordle words"),
 #  subtitle = "Testing Horstmeyer's & NYTimes words: 11 Apr 2022",
 #    subtitle = "Wordle Challenge Words Found in Six Moves or Less vs Starter Words",
-    caption = "Wordle challenge words found in six iterations or less\nBased on the full 2315-element Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR"
+    caption = paste0("Wordle challenge words found in six iterations or less\nBased on ",words,"-element subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR")
     ) +
   xlab("WordleR Starter Word") + 
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
   ylab("Wordle Challenge Words Found") +
-  geom_hline(aes(yintercept = 2315),linetype = "dotdash") +
-  geom_text(label="Wordle Magic Word List (truncated): 1829 words", x="equal", y=1829 + 1.5, size=3 )
+  geom_hline(aes(yintercept = nrow(short_list.df)),linetype = "dotdash") +
+  #geom_text(label=paste0("Wordle Magic Word List (truncated): ",words," words", x="equal", y=(words + 1.5), size=3 )) +
+  NULL
 
 ggsave(plot=p1,filename = "comparing_starter_words_winners_bar.png")
 p1
 
 ```
 
-According to this plot, the starter word **RECAP** _should never lose_ when used with the WordleR algorithm! 
+All of the tested starter words will solve Wordle using a {r nrow(short_list.df)} Magic Word subset. 
 
 ## More Plots Comparing Starter Words
 
@@ -443,8 +472,9 @@ p2 <- iteration_results %>%
 #  subtitle = "Testing NYTimes' recommended starter word: 11 Apr 2022",
 #  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
 #  subtitle = "Testing revised recommended starter word list: 18 Oct 2022",
-  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
-  caption = "Based on the 2315-element Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR")
+  subtitle = paste0("Testing ", length(trial_words)," Wordle words"),
+#  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
+  caption = paste0("Based on ",words,"-element subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR"))
 
 ggsave(plot=p2,filename = "comparing_starter_words_iterations_bar.png")
 p2
@@ -459,7 +489,7 @@ line_size <- NA
 line_size[1:length(trial_words)] <- 1
 line_size <- data.frame(line_size)
 line_size$starter <- trial_words
-line_size[line_size$starter=="heart",]$line_size <-  1.1 # Starter word to emphasize
+#line_size[line_size$starter=="heart",]$line_size <-  1.1 # Starter word to emphasize
 
 p3 <- as.data.frame(iteration_results) %>% 
   left_join(line_size) %>% 
@@ -475,8 +505,9 @@ p3 <- as.data.frame(iteration_results) %>%
 #  subtitle = "Testing NYTimes' recommended starter word: 11 Apr 2022",
 #  subtitle = "Testing Horstmeyer's & NYTimes words: 11 Apr 2022",
 #  subtitle = "Testing revised recommended starter word list: 18 Oct 2022",
-  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
-  caption = "Based on the 2315-element Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR") + 
+#  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
+  subtitle = paste0("Testing ", length(trial_words)," Wordle words"),
+  caption = paste0("Based on ",words,"-element subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR")) +
   geom_vline(xintercept = 6)
 
 ggsave(plot=p3,filename = "comparing_starter_words_iterations_line.png")
