@@ -145,10 +145,14 @@ We test a mixture of words recommended by various sources:
 # winners_51100 <- readRDS("winners_51100.Rds")
 # winners_101150 <- readRDS("winners_101150.Rds")
 # winners_151200 <- readRDS("winners_151200.Rds")
-# winners_001200 <- rbind(winners_0150,winners_51100,winners_101150,winners_151200)
-#saveRDS(winners_001200,"winners_001200.Rds")
-winners_001200 <- readRDS("winners_001200.Rds")
-trial_words.df <- winners_001200 %>% 
+# winners_201300 <- readRDS("winners_201300.Rds")
+# winners_301400 <- readRDS("winners_301400.Rds")
+# winners_401500 <- readRDS("winners_401500.Rds")
+# winners_001200 <- readRDS("winners_001200.Rds")
+# winners_001500 <- rbind(winners_001200,winners_201300,winners_301400,winners_401500)
+#saveRDS(winners_001500,"winners_001500.Rds")
+winners_001500 <- readRDS("winners_001500.Rds")
+trial_words.df <- winners_001500 %>% 
   select(starter) %>% 
   rename(word = starter)
 
@@ -435,10 +439,12 @@ p1 <- ggplot(iteration_results_starter_success,
     title="What's the 'Best' Wordle Starter Word?",
 #  subtitle = "Testing revised recommended starter word list: 18 Oct 2022",
 #  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
-  subtitle = paste0("Testing ", length(trial_words)," winning Wordle words"),
+  subtitle = paste0("Testing ", length(trial_words)," winning Wordle starter words"),
 #  subtitle = "Testing Horstmeyer's & NYTimes words: 11 Apr 2022",
 #    subtitle = "Wordle Challenge Words Found in Six Moves or Less vs Starter Words",
-    caption = paste0("Wordle challenge words found in six iterations or less\nBased on ",words,"-element subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR")
+    caption = paste0("Wordle challenge words found in six iterations or less\n
+                     Tested against a ",words,"-word subset of Wordle 'Magic Words' list\n
+                     Visit WordleR at: http://bit.ly/WordleR")
     ) +
   xlab("WordleR Starter Word") + 
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
@@ -472,9 +478,9 @@ p2 <- iteration_results %>%
 #  subtitle = "Testing NYTimes' recommended starter word: 11 Apr 2022",
 #  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
 #  subtitle = "Testing revised recommended starter word list: 18 Oct 2022",
-  subtitle = paste0("Testing ", length(trial_words)," Wordle words"),
+  subtitle = paste0("Testing ", length(trial_words)," winning Wordle starter words"),
 #  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
-  caption = paste0("Based on ",words,"-element subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR"))
+  caption = paste0("Tested against a ",words,"-word subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR"))
 
 ggsave(plot=p2,filename = "comparing_starter_words_iterations_bar.png")
 p2
@@ -506,8 +512,8 @@ p3 <- as.data.frame(iteration_results) %>%
 #  subtitle = "Testing Horstmeyer's & NYTimes words: 11 Apr 2022",
 #  subtitle = "Testing revised recommended starter word list: 18 Oct 2022",
 #  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
-  subtitle = paste0("Testing ", length(trial_words)," Wordle words"),
-  caption = paste0("Based on ",words,"-element subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR")) +
+  subtitle = paste0("Testing ", length(trial_words)," winning Wordle starter words"),
+  caption = paste0("Tested against a ",words,"-word subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR")) +
   geom_vline(xintercept = 6)
 
 ggsave(plot=p3,filename = "comparing_starter_words_iterations_line.png")
