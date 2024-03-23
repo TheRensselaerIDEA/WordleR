@@ -42,7 +42,7 @@ ui <- fluidPage(
   tags$h3("1. Start by entering a great starter word into",  
           tags$a(href="https://www.nytimes.com/games/wordle/index.html","WORDLE"), ", like:", 
           tags$br(),
-          tags$b("RECAP, HASTE, STARE, STONE, EARTH, TENOR, or IRATE (see below).")
+          tags$b("FETID, DEMON, HAUNT, EVICT, CLASP, or EYING")
   ),
 #  tags$br(),
   tags$h3("2. Filter the list of possible words based on WORDLE's response:"),
