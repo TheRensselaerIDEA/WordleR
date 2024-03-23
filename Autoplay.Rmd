@@ -96,7 +96,7 @@ We test a mixture of words recommended by various sources:
 * The most frequent English word (ABOUT)
 * Words with three or four vowels
 * A few "Best Wordle Starter Words" from several online sources: "YouTubing PhD students," Prof. Horstmeyer, et.al.
-* Exhaustively-tested starter words. 
+* Exhaustively-tested starter words; only "winning" words used now (23 Mar 2024)
 
 ```{r}
 # Recommended starter words from the Slate article: https://slate.com/technology/2022/02/perfect-wordle-guessing-strategy.html
@@ -151,12 +151,16 @@ We test a mixture of words recommended by various sources:
 # winners_001200 <- readRDS("winners_001200.Rds")
 # winners_001500 <- rbind(winners_001200,winners_201300,winners_301400,winners_401500)
 #saveRDS(winners_001500,"winners_001500.Rds")
-winners_001500 <- readRDS("winners_001500.Rds")
-trial_words.df <- winners_001500 %>% 
-  select(starter) %>% 
-  rename(word = starter)
+# winners_001500 <- readRDS("winners_001500.Rds")
+# trial_words.df <- winners_001500 %>% 
+#   select(starter) %>% 
+#   rename(word = starter)
+# 
+# trial_words <- unlist(lapply(trial_words.df$word, as.character))
 
-trial_words <- unlist(lapply(trial_words.df$word, as.character))
+trial_words <- c("fetid", "demon", "haunt", "evict", 
+                 "clasp", "eying", "clove", "ladle", 
+                 "ovary", "aware")
 
 ```
 
@@ -458,11 +462,11 @@ p1
 
 ```
 
-All of the tested starter words will solve Wordle using a {r nrow(short_list.df)} Magic Word subset. 
+All of the tested starter words will solve Wordle using a `r nrow(short_list.df)` Magic Word subset. 
 
 ## More Plots Comparing Starter Words
 
-Create a bar plot comparing the results using certain starter words.
+Create a bar plot comparing the results using the `r length(trial_words)` "winning" starter words.
 
 ```{r}
 p2 <- iteration_results %>% 
@@ -518,4 +522,22 @@ p3 <- as.data.frame(iteration_results) %>%
 
 ggsave(plot=p3,filename = "comparing_starter_words_iterations_line.png")
 p3
+```
+
+## What Winning Starter Word Will Survive the Longest? 
+
+_Of the `r length(trial_words)` "winning" starter words tested, what word can we use the longest?_
+
+In theory, whether a starter word is among the remaining challenge words doesn't actually matter; a proven "winning" starter will work for the duration of Wordle (based on testing against the original Magic Words list). But it is interesting to ponder, what word from our "winners" list will be the last to disappear from the Magic Words list? 
+
+We can figure this out by evaluating the position of our `r length(trial_words)` in the `r words` Magic Words subset. 
+
+```{r}
+# First figure out where the trial words appear
+positions <- match(trial_words,short_list)
+
+# Then find the word in the highest position
+last_standing <- short_list[max(positions)]
+
+last_standing
 ```
