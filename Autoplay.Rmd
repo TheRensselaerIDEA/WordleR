@@ -149,18 +149,25 @@ We test a mixture of words recommended by various sources:
 # winners_301400 <- readRDS("winners_301400.Rds")
 # winners_401500 <- readRDS("winners_401500.Rds")
 # winners_001200 <- readRDS("winners_001200.Rds")
-# winners_001500 <- rbind(winners_001200,winners_201300,winners_301400,winners_401500)
-#saveRDS(winners_001500,"winners_001500.Rds")
+# winners_5011000 <- readRDS("winners_5011000.Rds")
 # winners_001500 <- readRDS("winners_001500.Rds")
-# trial_words.df <- winners_001500 %>% 
-#   select(starter) %>% 
+# winners_0011000 <- rbind(winners_001500,winners_5011000)
+# saveRDS(winners_0011000,"winners_0011000.Rds")
+# winners_001500 <- readRDS("winners_001500.Rds")
+# trial_words.df <- winners_001500 %>%
+#   select(starter) %>%
 #   rename(word = starter)
 # 
 # trial_words <- unlist(lapply(trial_words.df$word, as.character))
 
-trial_words <- c("fetid", "demon", "haunt", "evict", 
-                 "clasp", "eying", "clove", "ladle", 
-                 "ovary", "aware")
+# Based on winners 1-500
+# trial_words <- c("fetid", "demon", "haunt", "evict", 
+#                  "clasp", "eying", "clove", "ladle", 
+#                  "ovary", "aware")
+# 
+# Based on winners 1-1000
+trial_words <- c("fetus", "flake", "glide", "haunt", "ladle",
+                 "lyric", "ovary", "salvo", "slang", "stork")
 
 ```
 
