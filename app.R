@@ -15,6 +15,7 @@ short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by 
 # used_words.df <- read.csv("used_words.csv")
 # used_words.df$word <- tolower(used_words.df$word)
 # saveRDS(used_words.df,"used_words.df.Rds")
+# UPDATE (27 Apr 2024): used_words.R is a scraper utility to re-generate used_words.Rds
 used_words.df <- readRDS("used_words.df.Rds")
 # 
 short_list.df <- anti_join(short_list.df, used_words.df, by="word")
