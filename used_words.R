@@ -2,6 +2,8 @@
 # 27 Apr 2024
 
 library(rvest)
+library(tidyr)
+
 pastwords_link <- "https://www.rockpapershotgun.com/wordle-past-answers"
 
 pastwords_page <- read_html(pastwords_link)
@@ -10,7 +12,7 @@ pastwords_page <- read_html(pastwords_link)
 inline_css <- pastwords_page %>%
   html_elements(css = ".inline")
 
-pastwords_inline_css <- html_text(summaries_css)
+pastwords_inline_css <- html_text(inline_css)
 
 pastwords_inline_css.df <- data.frame(cbind(c(pastwords_inline_css)))
 
