@@ -90,16 +90,8 @@ ui <- fluidPage(
                                           style="color: #fff; background-color: #337ab7; border-color: #2e6da4")))
   ),
   tags$br(),
-  tags$h3("5. NEW: Let WordleR generate your Twitter 'brag' post!"), 
+  tags$h3("5. Let WordleR generate your social media 'brag' post!"), 
   tags$table(
-  # tags$tr(
-  #     tags$td(selectInput("wordle_brag",choices=c("genius","magnificent","impressive","splendid","great","phew"),label="Select your congrats text:"))
-  #     ,tags$td(tags$br()),
-  #     tags$td(textInput("wordle_paste",label="Paste your Wordle result here:", value = ""))
-  #     ,tags$td(tags$br()),
-  #     tags$td(htmlOutput("twitter_text"))
-  #     ,
-  #     )
     tags$tr(
       tags$td(selectInput("wordle_brag",choices=c("genius","magnificent","impressive","splendid","great","phew"),label="Select your congrats text:"))
       ,tags$td(tags$br()),
