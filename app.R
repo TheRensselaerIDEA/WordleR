@@ -5,6 +5,9 @@ library(utf8)
 library(rclipboard)
 library(htmltools)
 
+# What version of WordleR?
+version <- read.csv("version.csv")$date
+
 # Initialize our word list
 # select the top n words by frequency from Knuth's list
 #short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words, sorted by frequency
@@ -110,10 +113,11 @@ ui <- fluidPage(
   ,
   tags$br(),
   tags$h4("Notes:"),
-  tags$p("a. Based on the ", tags$a(href="https://bit.ly/32tqaWj","list of 2315 Wordle 'Magic Words', with used words as of 30 May 2024 removed. "), 
-         tags$a(href="https://www.rockpapershotgun.com/wordle-past-answers","See also here."),
+  tags$p("a. Based on the ", tags$a(href="https://bit.ly/32tqaWj","list of 2315 Wordle 'Magic Words'"),
+         paste0(", with used words as of ",version," removed. "), 
+         tags$a(href="https://www.rockpapershotgun.com/wordle-past-answers","See also here.")),
   tags$p("b. WordleR arranges the remaining possible words based on the frequencies of the letters of those words in the English language. 
-         Words with reoccurring letters are de-emphasized.")),
+         Words with reoccurring letters are de-emphasized."),
   # tags$p("c. IMPORTANT! Each day WordleR removes previously-used words from the 'Magic Words' list."),
   tags$p("c. WordleR's recommended 'starter' words are the top remaining starter words as evaluated by the WordleR Autoplayer notebook. See the figure below."),  
   tags$p("d. WordleR's list of 'possible' guesses is only a subset of", guess_length, "matching words."),
@@ -121,7 +125,9 @@ ui <- fluidPage(
   tags$p("f. WordleR is powered by R, the world's greatest data analytics language!"),
   tags$p("g. WordleR source code and a related R Notebook are available at:",
          tags$a(href="https://github.com/TheRensselaerIDEA/WordleR","https://github.com/TheRensselaerIDEA/WordleR")),
-img(src='BestWordleRWords.png', align = "right",width="50%")
+img(src='BestWordleRWords.png', align = "right",width="50%"),
+tags$br(),
+tags$i(paste0("WordleR version: ",version))
 )
 
 server <- function(input, output) {
