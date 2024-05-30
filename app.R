@@ -43,7 +43,7 @@ ui <- fluidPage(
   tags$h3("1. Start by entering a great starter word into",  
           tags$a(href="https://www.nytimes.com/games/wordle/index.html","WORDLE"), ", like:", 
           tags$br(),
-          tags$b("LADLE, LYRIC, OVARY, SALVO, SLANG, or STORK")
+          tags$b("RECAP, FETUS, FLAKE, LYRIC, OVARY, SALVO, SLANG, or STORK")
   ),
 #  tags$br(),
   tags$h3("2. Filter the list of possible words based on WORDLE's response:"),
@@ -110,7 +110,7 @@ ui <- fluidPage(
   ,
   tags$br(),
   tags$h4("Notes:"),
-  tags$p("a. Based on the ", tags$a(href="https://bit.ly/32tqaWj","list of 2315 Wordle 'Magic Words', with used words as of 19 Mar 2024 removed. "), 
+  tags$p("a. Based on the ", tags$a(href="https://bit.ly/32tqaWj","list of 2315 Wordle 'Magic Words', with used words as of 30 May 2024 removed. "), 
          tags$a(href="https://www.rockpapershotgun.com/wordle-past-answers","See also here."),
   tags$p("b. WordleR arranges the remaining possible words based on the frequencies of the letters of those words in the English language. 
          Words with reoccurring letters are de-emphasized.")),

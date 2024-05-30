@@ -3,8 +3,8 @@ title: "WordleR Performance Analysis (aka 'The Autoplayer')"
 author: "John S. Erickson"
 date: "`r Sys.Date()`"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -166,8 +166,9 @@ We test a mixture of words recommended by various sources:
 #                  "ovary", "aware")
 # 
 # Based on winners 1-1000
-trial_words <- c("fetus", "flake", "glide", "haunt", "ladle",
-                 "lyric", "ovary", "salvo", "slang", "stork")
+trial_words <- c("recap", "fetus", "flake", 
+                 "lyric", "ovary", "salvo", 
+                 "slang", "stork")
 
 ```
 
@@ -544,7 +545,7 @@ We can figure this out by evaluating the position of our `r length(trial_words)`
 positions <- match(trial_words,short_list)
 
 # Then find the word in the highest position
-last_standing <- short_list[max(positions)]
+last_standing <- short_list[max(na.omit(positions))]
 
 last_standing
 ```
