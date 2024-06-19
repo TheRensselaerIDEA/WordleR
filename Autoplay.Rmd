@@ -54,8 +54,8 @@ short_list.df <- short_list.df %>% select(word) # Only need 'word' column
 # 
 # saveRDS(letter_freq, "letter_freq_wordle.Rds")
 
-letter_freq <- readRDS("letter_freq_wordle.Rds") # Letter freq in Wordle words
-#letter_freq.df <- readRDS("letter_freq_knuth.Rds") # Letter freq in Knuth's words
+#letter_freq <- readRDS("letter_freq_wordle.Rds") # Letter freq in Wordle words
+#letter_freq <- readRDS("letter_freq_knuth.Rds") # Letter freq in Knuth's words
 
 ## NEW: Re-arrange short-list based on letter frequency!
 ## Only do once, when initializing a new word list (e.g. Wordle or Knuth words)
@@ -74,9 +74,28 @@ letter_freq <- readRDS("letter_freq_wordle.Rds") # Letter freq in Wordle words
 # }
 # ## Re-arrange
 # short_list.df <- short_list.df %>% arrange(desc(score))
-# ## Save the re-ordered Wordle list
+## Save the re-ordered Wordle list
 # saveRDS(short_list.df, "Wordle_Words.Rds")
 # saveRDS(short_list.df, "short_list.Rds")
+
+# # For Knuth
+# Knuth_Words$score <- NA
+# 
+# for (test in Knuth_Words$word) {
+#    # De-emphasize duplicate letters!!!
+#    test_vect <- unique(strsplit(test,"")[[1]])
+#    score <- 0
+#    for (test_letter in test_vect) {
+#      letter_score <- letter_freq$freq[which(letter_freq$letter == test_letter)]
+#      score <- score + letter_score
+#    }
+#    Knuth_Words$score[Knuth_Words$word==test] <- score
+# }
+# ## Re-arrange
+# Knuth_Words <- Knuth_Words %>% arrange(desc(score))
+# ## Save the re-ordered Wordle list
+# saveRDS(Knuth_Words, "Knuth_Words.Rds")
+# # saveRDS(short_list.df, "short_list.Rds")
 
 
 ```

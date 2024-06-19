@@ -10,8 +10,8 @@ version <- read.csv("version.csv")$date
 
 # Initialize our word list
 # select the top n words by frequency from Knuth's list
-#short_list.df <- readRDS("short_list.Rds") # Knuth's 5757 words, sorted by frequency
-short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by their word frequency score
+short_list.df.knuth <- readRDS("Knuth_Words.Rds") # Knuth's 5757 words, sorted by letter frequency score
+short_list.df.wordle <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by letter frequency score
 
 # # uggcf://zrqvhz.pbz/@bjralva/urer-yvrf-jbeqyr-2021-2027-shyy-nafjre-yvfg-52017rr99r86
 # Get used words from: https://www.rockpapershotgun.com/wordle-past-answers
@@ -21,13 +21,16 @@ short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by 
 # UPDATE (27 Apr 2024): used_words.R is a scraper utility to re-generate used_words.Rds
 used_words.df <- readRDS("used_words.df.Rds")
 # 
-short_list.df <- anti_join(short_list.df, used_words.df, by="word")
+short_list.df.knuth <- anti_join(short_list.df.knuth, used_words.df, by="word")
+short_list.df.wordle <- anti_join(short_list.df.wordle, used_words.df, by="word")
 # saveRDS(short_list.df,"short_list.Rds")
 # select the top n words by frequency from word list (Wordle or Knuth)
-n <- nrow(short_list.df)
+n.knuth <- nrow(short_list.df.knuth)
+n.wordle <- nrow(short_list.df.wordle)
 
 # Make it a vector
-short_list <- short_list.df[1:n,]$word
+short_list.knuth <- short_list.df.knuth[1:n.knuth,]$word
+short_list.wordle <- short_list.df.knuth[1:n.wordle,]$word
 
 # We gratuitously display a subset of words
 guess_length <- 50
@@ -86,8 +89,11 @@ ui <- fluidPage(
   tags$h3("4. Or try one of these words: (",textOutput("possible_guesses",inline = TRUE),"remaining possibilities)"),
   tags$table(width="50%",
              tags$tr(tags$td(verbatimTextOutput("guess"))),
-             tags$tr(tags$td(actionButton("refresh", "Reload master word list",
-                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4")))
+             tags$tr(tags$td(actionButton("load_wordle", "Load Wordle word list",
+                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
+                     tags$td(actionButton("load_knuth", "Load Knuth word list",
+                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4"))
+                     )
   ),
   tags$br(),
   tags$h3("5. Let WordleR generate your social media 'brag' post!"), 
@@ -124,7 +130,8 @@ tags$i(paste0("WordleR version: ",version))
 
 server <- function(input, output) {
   
-word_list <- reactiveVal(short_list)
+word_list <- reactiveVal(short_list.wordle) # Initialize to Wordle words
+short_list.df <- reactiveVal(short_list.wordle)
 
 twitter_html <- reactiveVal() # with markup
 twitter_raw <- reactiveVal() # for Mastodon et.al.
@@ -199,8 +206,12 @@ output$johnsguess <- renderText({
     word_list(word_list()[include_mask])
   })
 
-  observeEvent(input$refresh, {
-    word_list(short_list)
+  observeEvent(input$load_wordle, {
+    word_list(short_list.wordle)
+  })
+
+  observeEvent(input$load_knuth, {
+    word_list(short_list.knuth)
   })
   
 }
