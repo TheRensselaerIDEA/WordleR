@@ -206,6 +206,7 @@ output$johnsguess <- renderText({
     word_list(word_list()[include_mask])
   })
 
+  # NEW (19 Jun 2024): Load Wordle or Knuth words!
   observeEvent(input$load_wordle, {
     word_list(short_list.wordle)
   })
