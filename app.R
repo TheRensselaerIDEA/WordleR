@@ -1,4 +1,4 @@
-# UPDATE: 18 Mar 2024 ("1,000" issue)
+# UPDATE: 19 Jun 2024 (Display version)
 library(shiny)
 library(tidyverse)
 library(utf8)
