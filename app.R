@@ -111,8 +111,8 @@ ui <- fluidPage(
   ,
   tags$br(),
   tags$h4("Notes:"),
-  tags$p("a. Based on the ", tags$a(href="https://bit.ly/32tqaWj","list of 2315 Wordle 'Magic Words'"),
-         paste0(", with used words as of ",version," removed. "), 
+  tags$p("a. Based on the ", tags$a(href="https://bit.ly/32tqaWj","list of 2315 Wordle 'Magic Words' "),
+         paste0("or the Knuth list of 5757 words, with used words as of ",version," removed. "), 
          tags$a(href="https://www.rockpapershotgun.com/wordle-past-answers","See also here.")),
   tags$p("b. WordleR arranges the remaining possible words based on the frequencies of the letters of those words in the English language. 
          Words with reoccurring letters are de-emphasized."),
