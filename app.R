@@ -1,7 +1,8 @@
-# UPDATE: 19 Jun 2024 (Display version)
+# UPDATE: 05 Jul 2024 (Trim packages)
 library(shiny)
-library(tidyverse)
-library(utf8)
+#library(tidyverse)
+library(dplyr)
+#library(utf8)
 library(rclipboard)
 library(htmltools)
 

@@ -1,0 +1,7 @@
+app.R
+version.csv
+Knuth_Words.Rds
+Wordle_Words.Rds
+used_words.df.Rds
+www/BestWordleRWords.png
+www/WordleR.png
