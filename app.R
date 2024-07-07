@@ -131,8 +131,10 @@ tags$i(paste0("WordleR version: ",version))
 
 server <- function(input, output) {
   
-word_list <- reactiveVal(short_list.wordle) # Initialize to Wordle words
-short_list.df <- reactiveVal(short_list.wordle)
+# word_list <- reactiveVal(short_list.wordle) # Initialize to Wordle words
+# short_list.df <- reactiveVal(short_list.wordle)
+word_list <- reactiveVal(short_list.knuth) # Initialize to Knuth words
+short_list.df <- reactiveVal(short_list.knuth)
 
 twitter_html <- reactiveVal() # with markup
 twitter_raw <- reactiveVal() # for Mastodon et.al.
