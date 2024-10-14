@@ -21,9 +21,17 @@ short_list.df.wordle <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sor
 # saveRDS(used_words.df,"used_words.df.Rds")
 # UPDATE (27 Apr 2024): used_words.R is a scraper utility to re-generate used_words.Rds
 used_words.df <- readRDS("used_words.df.Rds")
+
+# TODO: check its structure!
+knuth_plurals.df <- readRDS("knuth_plural_nouns.Rds") # Via GPT 4o!
+knuth_plurals_list <- cbind.data.frame(word=rownames(knuth_plurals.df))
 # 
 short_list.df.knuth <- anti_join(short_list.df.knuth, used_words.df, by="word")
 short_list.df.wordle <- anti_join(short_list.df.wordle, used_words.df, by="word")
+
+# Remove the plural nouns!
+short_list.df.knuth <- anti_join(short_list.df.knuth, knuth_plurals_list, by="word")
+
 # saveRDS(short_list.df,"short_list.Rds")
 # select the top n words by frequency from word list (Wordle or Knuth)
 n.knuth <- nrow(short_list.df.knuth)
