@@ -121,7 +121,7 @@ ui <- fluidPage(
   tags$br(),
   tags$h4("Notes:"),
   tags$p("a. Based on the ", tags$a(href="https://bit.ly/32tqaWj","list of 2315 Wordle 'Magic Words' "),
-         paste0("or the Knuth list of 5757 words, with used words as of ",version," removed. "), 
+         "or the ", tags$a(href="https://homepage.cs.uiowa.edu/~sriram/21/fall04/words.html","Knuth list of 5757 five-letter words")," with used words as of ",version," removed. ", 
          tags$a(href="https://www.rockpapershotgun.com/wordle-past-answers","See also here.")),
   tags$p("b. WordleR arranges the remaining possible words based on the frequencies of the letters of those words in the English language. 
          Words with reoccurring letters are de-emphasized."),
@@ -160,8 +160,10 @@ output$johnsguess <- renderText({
   })
 
   output$twitter_text <- renderUI({
-    #browser()
+    
     wordle_paste <- input$wordle_paste
+    # 04 Feb 2025: Replace whites with blacks (for Bluesky and LinkedIn)
+    wordle_paste <- gsub("⬜", "⬛",wordle_paste)
     twitter_html(HTML(paste0('WordleR, the #Rstats-powered #Wordle Helper, was "',input$wordle_brag,'" today!<br/>'),
 #    paste0(strsplit(input$wordle_paste,split = "")[[1]][1:15], collapse = ""),"<br/>",
     ifelse(!anyNA(strsplit(wordle_paste,split = "")[[1]][1:17]), paste0(paste0(strsplit(wordle_paste,split = "")[[1]][1:17],  collapse = ""),"<br/>"),""),
