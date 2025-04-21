@@ -14,6 +14,14 @@ version <- read.csv("version.csv")$date
 short_list.df.knuth <- readRDS("Knuth_Words.Rds") # Knuth's 5757 words, sorted by letter frequency score
 short_list.df.wordle <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by letter frequency score
 
+# # 21 Apr: identify the Wordle words missing from Knuth
+# missing <- anti_join(short_list.df.wordle[,"word"], short_list.df.knuth[,"word"])$word
+# missing.df <- short_list.df.wordle[short_list.df.wordle$word%in%missing, ]
+# missing.df$score <- missing.df$score/100
+#   
+# short_list.df.knuth <- rbind(short_list.df.knuth, missing.df)
+# saveRDS(short_list.df.knuth, "Knuth_Words.Rds")
+
 # # uggcf://zrqvhz.pbz/@bjralva/urer-yvrf-jbeqyr-2021-2027-shyy-nafjre-yvfg-52017rr99r86
 # Get used words from: https://www.rockpapershotgun.com/wordle-past-answers
 # used_words.df <- read.csv("used_words.csv")
