@@ -62,7 +62,7 @@ ui <- fluidPage(
             tags$style(HTML("img {float:none;}"))
             ),
   img(src='WordleR.png', align = "left"),
-  titlePanel("An R-based WORDLE Helper"),
+  titlePanel("WORDLER: The RStats-powered WORDLE Helper"),
   tags$h3("1. Start by entering a great starter word into",  
           tags$a(href="https://www.nytimes.com/games/wordle/index.html","WORDLE"), ", like:", 
           tags$br(),
