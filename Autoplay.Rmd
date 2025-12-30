@@ -3,8 +3,8 @@ title: "WordleR Performance Analysis (aka 'The Autoplayer')"
 author: "John S. Erickson"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -34,7 +34,8 @@ Here we read in the selected word list.
 
 # 23 Mar 2024: Only use remaining Wordle words (from WordleR)
 used_words.df <- readRDS("used_words.df.Rds")
-short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by their word frequency score
+#short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by their word frequency score
+short_list.df <- readRDS("Knuth_noplurals_01Jan2025.Rds") # Knuth words, with noun plurals removed
 short_list.df <- anti_join(short_list.df, used_words.df, by="word")
 
 short_list.df <- short_list.df %>% select(word) # Only need 'word' column
@@ -185,7 +186,7 @@ We test a mixture of words recommended by various sources:
 #                  "ovary", "aware")
 # 
 # Based on winners 1-1000
-trial_words <- c("recap", "fetus", "flake", 
+trial_words <- c("neato", "recap", "fetus", "flake", 
                  "lyric", "ovary", "salvo", 
                  "slang", "stork")
 
@@ -511,9 +512,11 @@ p2 <- iteration_results %>%
 #  subtitle = "Testing revised recommended starter word list: 18 Oct 2022",
   subtitle = paste0("Testing ", length(trial_words)," winning Wordle starter words"),
 #  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
-  caption = paste0("Tested against a ",words,"-word subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR"))
+  #caption = paste0("Tested against a ",words,"-word subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR"))
+  caption = paste0("Tested against a ",words,"-word subset of Knuth word list\nVisit WordleR at: http://bit.ly/WordleR"))
 
 ggsave(plot=p2,filename = "comparing_starter_words_iterations_bar.png")
+
 p2
 
 ``` 
@@ -544,10 +547,13 @@ p3 <- as.data.frame(iteration_results) %>%
 #  subtitle = "Testing revised recommended starter word list: 18 Oct 2022",
 #  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
   subtitle = paste0("Testing ", length(trial_words)," winning Wordle starter words"),
-  caption = paste0("Tested against a ",words,"-word subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR")) +
+  #caption = paste0("Tested against a ",words,"-word subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR")) +
+  caption = paste0("Tested against a ",words,"-word subset of Knuth word list\nVisit WordleR at: http://bit.ly/WordleR")) +
   geom_vline(xintercept = 6)
 
 ggsave(plot=p3,filename = "comparing_starter_words_iterations_line.png")
+ggsave(plot=p3,filename = "www/BestWordleRWords.png")
+
 p3
 ```
 
