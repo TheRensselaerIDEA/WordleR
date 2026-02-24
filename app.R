@@ -1,4 +1,4 @@
-# UPDATE: 05 Jul 2024 (Trim packages)
+# UPDATE: 24 Feb 2026 (Kaggle words)
 library(shiny)
 library(tidyverse)
 #library(dplyr)
