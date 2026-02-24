@@ -111,13 +111,19 @@ ui <- fluidPage(
   tags$h3("4. Or try one of these words: (",textOutput("possible_guesses",inline = TRUE),"remaining possibilities)"),
   tags$table(width="50%",
              tags$tr(tags$td(verbatimTextOutput("guess"))),
-             tags$tr(tags$td(actionButton("load_wordle", "Load Wordle word list",
-                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
-                     tags$td(actionButton("load_knuth", "Load Knuth word list",
-                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
-                     tags$td(actionButton("load_kaggle", "Load Kaggle word list",
+             tags$tr(
+               tags$td(actionButton("load_wordle", "Load Wordle word list",
+                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                       actionButton("load_knuth", "Load Knuth word list",
+                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                       actionButton("load_kaggle", "Load Kaggle word list",
                                           style="color: #fff; background-color: #337ab7; border-color: #2e6da4"))
-                     
+                             #tags$tr(tags$td(actionButton("load_wordle", "Load Wordle word list",
+                             #                      style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
+                             # tags$td(actionButton("load_knuth", "Load Knuth word list",
+                             #                      style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
+                             # tags$td(actionButton("load_kaggle", "Load Kaggle word list",
+                             #                      style="color: #fff; background-color: #337ab7; border-color: #2e6da4"))
                      )
   ),
   tags$br(),
