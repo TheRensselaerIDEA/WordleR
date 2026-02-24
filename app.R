@@ -13,6 +13,7 @@ version <- read.csv("version.csv")$date
 # select the top n words by frequency from Knuth's list
 short_list.df.knuth <- readRDS("Knuth_Words.Rds") # Knuth's 5757 words, sorted by letter frequency score
 short_list.df.wordle <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by letter frequency score
+short_list.df.kaggle <- readRDS("kaggle_freq.Rds") # 39K Kaggle Words, sorted by letter frequency score
 
 # # 21 Apr: identify the Wordle words missing from Knuth
 # missing <- anti_join(short_list.df.wordle[,"word"], short_list.df.knuth[,"word"])$word
@@ -36,18 +37,22 @@ knuth_plurals_list <- cbind.data.frame(word=rownames(knuth_plurals.df))
 # 
 short_list.df.knuth <- anti_join(short_list.df.knuth, used_words.df, by="word")
 short_list.df.wordle <- anti_join(short_list.df.wordle, used_words.df, by="word")
+short_list.df.kaggle <- anti_join(short_list.df.kaggle, used_words.df, by="word")
 
 # Remove the plural nouns!
 short_list.df.knuth <- anti_join(short_list.df.knuth, knuth_plurals_list, by="word")
+short_list.df.kaggle <- anti_join(short_list.df.kaggle, knuth_plurals_list, by="word")
 
 # saveRDS(short_list.df,"short_list.Rds")
 # select the top n words by frequency from word list (Wordle or Knuth)
 n.knuth <- nrow(short_list.df.knuth)
 n.wordle <- nrow(short_list.df.wordle)
+n.kaggle <- nrow(short_list.df.kaggle)
 
 # Make it a vector
 short_list.knuth <- short_list.df.knuth[1:n.knuth,]$word
 short_list.wordle <- short_list.df.knuth[1:n.wordle,]$word
+short_list.kaggle <- short_list.df.kaggle[1:n.kaggle,]$word
 
 # We gratuitously display a subset of words
 guess_length <- 50
@@ -109,7 +114,10 @@ ui <- fluidPage(
              tags$tr(tags$td(actionButton("load_wordle", "Load Wordle word list",
                                           style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
                      tags$td(actionButton("load_knuth", "Load Knuth word list",
+                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
+                     tags$td(actionButton("load_kaggle", "Load Kaggle word list",
                                           style="color: #fff; background-color: #337ab7; border-color: #2e6da4"))
+                     
                      )
   ),
   tags$br(),
@@ -234,6 +242,11 @@ output$johnsguess <- renderText({
 
   observeEvent(input$load_knuth, {
     word_list(short_list.knuth)
+  })
+
+  # NEW (23 Feb 2026): Load Kaggle!
+  observeEvent(input$load_kaggle, {
+    word_list(short_list.kaggle)
   })
   
 }
