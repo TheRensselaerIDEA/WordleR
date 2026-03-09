@@ -39,9 +39,11 @@ short_list.df.knuth <- anti_join(short_list.df.knuth, used_words.df, by="word")
 short_list.df.wordle <- anti_join(short_list.df.wordle, used_words.df, by="word")
 short_list.df.kaggle <- anti_join(short_list.df.kaggle, used_words.df, by="word")
 
+kaggle_plurals.df <- readRDS("kaggle_plurals.df.Rds") # 
+
 # Remove the plural nouns!
 short_list.df.knuth <- anti_join(short_list.df.knuth, knuth_plurals_list, by="word")
-short_list.df.kaggle <- anti_join(short_list.df.kaggle, knuth_plurals_list, by="word")
+short_list.df.kaggle <- anti_join(short_list.df.kaggle, kaggle_plurals.df, by="word")
 
 # saveRDS(short_list.df,"short_list.Rds")
 # select the top n words by frequency from word list (Wordle or Knuth)
