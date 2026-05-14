@@ -1,4 +1,4 @@
-# UPDATE: 24 Feb 2026 (Kaggle words)
+# UPDATE: 14 May 2026 (Remove names)
 library(shiny)
 library(tidyverse)
 #library(dplyr)
@@ -30,6 +30,7 @@ short_list.df.kaggle <- readRDS("kaggle_freq.Rds") # 39K Kaggle Words, sorted by
 # saveRDS(used_words.df,"used_words.df.Rds")
 # UPDATE (27 Apr 2024): used_words.R is a scraper utility to re-generate used_words.Rds
 used_words.df <- readRDS("used_words.df.Rds")
+names.df <- readRDS("names.Rds")
 
 # TODO: check its structure!
 knuth_plurals.df <- readRDS("knuth_plural_nouns.Rds") # Via GPT 4o!
@@ -44,6 +45,10 @@ kaggle_plurals.df <- readRDS("kaggle_plurals.df.Rds") #
 # Remove the plural nouns!
 short_list.df.knuth <- anti_join(short_list.df.knuth, knuth_plurals_list, by="word")
 short_list.df.kaggle <- anti_join(short_list.df.kaggle, kaggle_plurals.df, by="word")
+
+# Remove five-letter names!
+short_list.df.knuth <- anti_join(short_list.df.knuth, names, by="word")
+short_list.df.kaggle <- anti_join(short_list.df.kaggle, names, by="word")
 
 # saveRDS(short_list.df,"short_list.Rds")
 # select the top n words by frequency from word list (Wordle or Knuth)
