@@ -1,4 +1,4 @@
-# UPDATE: 14 May 2026 (Remove names)
+# UPDATE: 15 May 2026 (Wordlebot words)
 library(shiny)
 library(tidyverse)
 #library(dplyr)
@@ -23,6 +23,7 @@ version <- read.csv("version.csv")$date
 short_list.df.knuth <- readRDS("Knuth_Words.Rds") # Knuth's 5757 words, sorted by letter frequency score
 short_list.df.wordle <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by letter frequency score
 short_list.df.kaggle <- readRDS("kaggle_freq.Rds") # 39K Kaggle Words, sorted by letter frequency score
+short_list.df.wordlebot <- readRDS("wordlebot_words.Rds") # 3.2K Wordlebot Words
 
 # # 21 Apr: identify the Wordle words missing from Knuth
 # missing <- anti_join(short_list.df.wordle[,"word"], short_list.df.knuth[,"word"])$word
@@ -48,6 +49,7 @@ knuth_plurals_list <- cbind.data.frame(word=rownames(knuth_plurals.df))
 short_list.df.knuth <- anti_join(short_list.df.knuth, used_words.df, by="word")
 short_list.df.wordle <- anti_join(short_list.df.wordle, used_words.df, by="word")
 short_list.df.kaggle <- anti_join(short_list.df.kaggle, used_words.df, by="word")
+short_list.df.wordlebot <- anti_join(short_list.df.wordlebot, used_words.df, by="word")
 
 kaggle_plurals.df <- readRDS("kaggle_plurals.df.Rds") # 
 
@@ -64,11 +66,13 @@ short_list.df.kaggle <- anti_join(short_list.df.kaggle, names.df, by="word")
 n.knuth <- nrow(short_list.df.knuth)
 n.wordle <- nrow(short_list.df.wordle)
 n.kaggle <- nrow(short_list.df.kaggle)
+n.wordlebot <- nrow(short_list.df.wordlebot)
 
 # Make it a vector
 short_list.knuth <- short_list.df.knuth[1:n.knuth,]$word
 short_list.wordle <- short_list.df.knuth[1:n.wordle,]$word
 short_list.kaggle <- short_list.df.kaggle[1:n.kaggle,]$word
+short_list.wordlebot <- short_list.df.wordlebot[1:n.wordlebot,]$word
 
 # We gratuitously display a subset of words
 guess_length <- 50
@@ -133,13 +137,9 @@ ui <- fluidPage(
                        actionButton("load_knuth", "Load Knuth word list",
                                           style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
                        actionButton("load_kaggle", "Load Kaggle word list",
-                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4"))
-                             #tags$tr(tags$td(actionButton("load_wordle", "Load Wordle word list",
-                             #                      style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
-                             # tags$td(actionButton("load_knuth", "Load Knuth word list",
-                             #                      style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
-                             # tags$td(actionButton("load_kaggle", "Load Kaggle word list",
-                             #                      style="color: #fff; background-color: #337ab7; border-color: #2e6da4"))
+                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                       actionButton("load_wordlebot", "Load Wordlebot word list",
+                            style="color: #fff; background-color: #337ab7; border-color: #2e6da4"))
                      )
   ),
   tags$br(),
@@ -181,8 +181,10 @@ server <- function(input, output) {
 # short_list.df <- reactiveVal(short_list.wordle)
 # word_list <- reactiveVal(short_list.knuth) # Initialize to Knuth words
 # short_list.df <- reactiveVal(short_list.knuth)
-word_list <- reactiveVal(short_list.kaggle) # Initialize to Kaggle words
-short_list.df <- reactiveVal(short_list.kaggle)
+# word_list <- reactiveVal(short_list.kaggle) # Initialize to Kaggle words
+# short_list.df <- reactiveVal(short_list.kaggle)
+word_list <- reactiveVal(short_list.wordlebot) # Initialize to Wordlebot words
+short_list.df <- reactiveVal(short_list.wordlebot)
 
 twitter_html <- reactiveVal() # with markup
 twitter_raw <- reactiveVal() # for Mastodon et.al.
@@ -271,6 +273,11 @@ output$johnsguess <- renderText({
   # NEW (23 Feb 2026): Load Kaggle!
   observeEvent(input$load_kaggle, {
     word_list(short_list.kaggle)
+  })
+
+  # NEW (15 May 2026): Load Wordlebot!
+  observeEvent(input$load_wordlebot, {
+    word_list(short_list.wordlebot)
   })
   
 }
