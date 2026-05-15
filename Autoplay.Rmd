@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## The Challenge: Are there any Wordle puzzles that WordleR can't find?
 
-There are many possible "challenge" word lists to test the WordleR algorithm against, including Knuth (5757 words) and Kaggle (over 39k). Ultimately we found the Wordle "Magic Words" list (2315 words).
+There are many possible "challenge" word lists to test the WordleR algorithm against, including the original Wordle "Magic Words" list (2315 words), Knuth (5757 words) and Kaggle (over 39k). 
 
 Our default setup for this notebook is to load the Wordle Magic Word list, _re-arranged by scoring each word by the frequency of its letters with respect to the entire list_ and de-emphasizing duplicate letters. "For completeness" other word list options are available in the code comments for testing and analysis, and a few utility code snippets are embedded to help with hacking when needed.
 
@@ -32,11 +32,13 @@ Here we read in the selected word list.
 #short_list.df <- readRDS("Wordle_Words.Rds") # DEFAULT: "Official" Wordle Magic Words, by letter freq (truncated 31 Oct 2022)
 #short_list.df <- readRDS("used_words_full.Rds") # Full list of Wordle magic words
 
-# 23 Mar 2024: Only use remaining Wordle words (from WordleR)
-used_words.df <- readRDS("used_words.df.Rds")
-#short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by their word frequency score
-short_list.df <- readRDS("Knuth_noplurals_01Jan2025.Rds") # Knuth words, with noun plurals removed
-short_list.df <- anti_join(short_list.df, used_words.df, by="word")
+# # 23 Mar 2024: Only use remaining Wordle words (from WordleR)
+# used_words.df <- readRDS("used_words.df.Rds")
+# #short_list.df <- readRDS("Wordle_Words.Rds") # Official Wordle Words, sorted by their word frequency score
+# short_list.df <- readRDS("Knuth_noplurals_01Jan2025.Rds") # Knuth words, with noun plurals removed
+# short_list.df <- anti_join(short_list.df, used_words.df, by="word")
+
+short_list.df <- readRDS("short_list.df.kaggle.Rds") # Pre-cook in WordleR
 
 short_list.df <- short_list.df %>% select(word) # Only need 'word' column
 ```
@@ -475,7 +477,7 @@ p1 <- ggplot(iteration_results_starter_success,
 #  subtitle = "Testing Horstmeyer's & NYTimes words: 11 Apr 2022",
 #    subtitle = "Wordle Challenge Words Found in Six Moves or Less vs Starter Words",
     caption = paste0("Wordle challenge words found in six iterations or less\n
-                     Tested against a ",words,"-word subset of Wordle 'Magic Words' list\n
+                     Tested against a ",words,"-word subset of a Kaggle five-letter word list\n
                      Visit WordleR at: http://bit.ly/WordleR")
     ) +
   xlab("WordleR Starter Word") + 
@@ -513,7 +515,7 @@ p2 <- iteration_results %>%
   subtitle = paste0("Testing ", length(trial_words)," winning Wordle starter words"),
 #  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
   #caption = paste0("Tested against a ",words,"-word subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR"))
-  caption = paste0("Tested against a ",words,"-word subset of Knuth word list\nVisit WordleR at: http://bit.ly/WordleR"))
+  caption = paste0("Tested against a ",words,"-word subset of a Kaggle five-letter word list\nVisit WordleR at: http://bit.ly/WordleR"))
 
 ggsave(plot=p2,filename = "comparing_starter_words_iterations_bar.png")
 
@@ -548,7 +550,7 @@ p3 <- as.data.frame(iteration_results) %>%
 #  subtitle = "Testing favorite Wordle starter words (including Horstmeyer and YouTuber) ",
   subtitle = paste0("Testing ", length(trial_words)," winning Wordle starter words"),
   #caption = paste0("Tested against a ",words,"-word subset of Wordle 'Magic Words' list\nVisit WordleR at: http://bit.ly/WordleR")) +
-  caption = paste0("Tested against a ",words,"-word subset of Knuth word list\nVisit WordleR at: http://bit.ly/WordleR")) +
+  caption = paste0("Tested against a ",words,"-word subset of a Kaggle five-letter word list\nVisit WordleR at: http://bit.ly/WordleR")) +
   geom_vline(xintercept = 6)
 
 ggsave(plot=p3,filename = "comparing_starter_words_iterations_line.png")

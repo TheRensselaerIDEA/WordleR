@@ -5,6 +5,15 @@ library(tidyverse)
 #library(utf8)
 library(rclipboard)
 library(htmltools)
+library(conflicted)
+
+# Use 'conflicted' to resolve conflicts
+conflict_prefer_all("dplyr", quiet = TRUE)
+conflict_prefer_all("lubridate", quiet = TRUE)
+conflict_prefer_all("ggplot2", quiet = TRUE)
+conflict_prefer_all("readr", quiet = TRUE)
+conflict_prefer_all("purrr", quiet = TRUE)
+conflict_prefer_all("htmltools", quiet = TRUE)
 
 # What version of WordleR?
 version <- read.csv("version.csv")$date
@@ -47,10 +56,10 @@ short_list.df.knuth <- anti_join(short_list.df.knuth, knuth_plurals_list, by="wo
 short_list.df.kaggle <- anti_join(short_list.df.kaggle, kaggle_plurals.df, by="word")
 
 # Remove five-letter names!
-short_list.df.knuth <- anti_join(short_list.df.knuth, names, by="word")
-short_list.df.kaggle <- anti_join(short_list.df.kaggle, names, by="word")
+short_list.df.knuth <- anti_join(short_list.df.knuth, names.df, by="word")
+short_list.df.kaggle <- anti_join(short_list.df.kaggle, names.df, by="word")
 
-# saveRDS(short_list.df,"short_list.Rds")
+# saveRDS(short_list.df.kaggle,"short_list.df.kaggle.Rds")
 # select the top n words by frequency from word list (Wordle or Knuth)
 n.knuth <- nrow(short_list.df.knuth)
 n.wordle <- nrow(short_list.df.wordle)
