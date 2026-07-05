@@ -39,17 +39,18 @@ short_list.df.wordlebot <- readRDS("wordlebot_words.Rds") # 3.2K Wordlebot Words
 # used_words.df$word <- tolower(used_words.df$word)
 # saveRDS(used_words.df,"used_words.df.Rds")
 # UPDATE (27 Apr 2024): used_words.R is a scraper utility to re-generate used_words.Rds
-used_words.df <- readRDS("used_words.df.Rds")
+# UPDATE (03 Jul 2026): Disabled used_words
+#used_words.df <- readRDS("used_words.df.Rds")
 names.df <- readRDS("names.Rds")
 
 # TODO: check its structure!
 knuth_plurals.df <- readRDS("knuth_plural_nouns.Rds") # Via GPT 4o!
 knuth_plurals_list <- cbind.data.frame(word=rownames(knuth_plurals.df))
 # 
-short_list.df.knuth <- anti_join(short_list.df.knuth, used_words.df, by="word")
-short_list.df.wordle <- anti_join(short_list.df.wordle, used_words.df, by="word")
-short_list.df.kaggle <- anti_join(short_list.df.kaggle, used_words.df, by="word")
-short_list.df.wordlebot <- anti_join(short_list.df.wordlebot, used_words.df, by="word")
+# short_list.df.knuth <- anti_join(short_list.df.knuth, used_words.df, by="word")
+# short_list.df.wordle <- anti_join(short_list.df.wordle, used_words.df, by="word")
+# short_list.df.kaggle <- anti_join(short_list.df.kaggle, used_words.df, by="word")
+# short_list.df.wordlebot <- anti_join(short_list.df.wordlebot, used_words.df, by="word")
 
 kaggle_plurals.df <- readRDS("kaggle_plurals.df.Rds") # 
 
@@ -158,9 +159,7 @@ ui <- fluidPage(
   ,
   tags$br(),
   tags$h4("Notes:"),
-  tags$p("a. Based on the ", tags$a(href="https://bit.ly/32tqaWj","list of 2315 Wordle 'Magic Words' "),
-         "or the ", tags$a(href="https://homepage.cs.uiowa.edu/~sriram/21/fall04/words.html","Knuth list of 5757 five-letter words")," with used words as of ",version," removed. ", 
-         tags$a(href="https://www.rockpapershotgun.com/wordle-past-answers","See also here.")),
+  tags$p("a. Based on the user's choice of five-letter words. As of ",version," used words are no longer removed."),
   tags$p("b. WordleR arranges the remaining possible words based on the frequencies of the letters of those words in the English language. 
          Words with reoccurring letters are de-emphasized."),
   # tags$p("c. IMPORTANT! Each day WordleR removes previously-used words from the 'Magic Words' list."),
