@@ -1,4 +1,4 @@
-# UPDATE: 15 May 2026 (Wordlebot words)
+# UPDATE: 14 Aug 2026 (Kaggle words)
 library(shiny)
 library(tidyverse)
 #library(dplyr)
@@ -180,10 +180,10 @@ server <- function(input, output) {
 # short_list.df <- reactiveVal(short_list.wordle)
 # word_list <- reactiveVal(short_list.knuth) # Initialize to Knuth words
 # short_list.df <- reactiveVal(short_list.knuth)
-# word_list <- reactiveVal(short_list.kaggle) # Initialize to Kaggle words
-# short_list.df <- reactiveVal(short_list.kaggle)
-word_list <- reactiveVal(short_list.wordlebot) # Initialize to Wordlebot words
-short_list.df <- reactiveVal(short_list.wordlebot)
+word_list <- reactiveVal(short_list.kaggle) # Initialize to Kaggle words
+short_list.df <- reactiveVal(short_list.kaggle)
+# word_list <- reactiveVal(short_list.wordlebot) # Initialize to Wordlebot words
+# short_list.df <- reactiveVal(short_list.wordlebot)
 
 twitter_html <- reactiveVal() # with markup
 twitter_raw <- reactiveVal() # for Mastodon et.al.
